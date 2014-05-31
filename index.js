@@ -14,6 +14,10 @@ var fakeAsync = function (fn, args, cb) {
 var validateArgument = function (key, val) {
   switch (key) {
     case 'path':
+      if (typeof val !== 'string') {
+        throw new TypeError('`' + key + '` must be a string');
+      }
+      return new Buffer(val).toString('binary');
     case 'attr':
       if (typeof val !== 'string') {
         throw new TypeError('`' + key + '` must be a string');
