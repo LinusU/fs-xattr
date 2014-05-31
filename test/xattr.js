@@ -1,13 +1,26 @@
 
-var xattr = require('../')
+var xattr = require('../');
+
+var fs = require('fs');
+var tmp = require('tmp');
 var assert = require('assert');
 var crypto = require('crypto');
 
-var path = '/tmp/test';
 var attribute = 'com.linusu.test';
 var payload = crypto.randomBytes(24).toString('hex');
 
 describe('xattr#sync', function () {
+
+  var path;
+
+  before(function (done) {
+    tmp.file(function (err, _path, fd) {
+      if (err) { return done(err); }
+
+      path = _path;
+      fs.close(fd, done);
+    });
+  });
 
   it('should set an attribute', function () {
     xattr.setSync(path, attribute, payload);
@@ -38,9 +51,24 @@ describe('xattr#sync', function () {
     });
   });
 
+  after(function (done) {
+    fs.unlink(path, done);
+  });
+
 });
 
 describe('xattr#async', function () {
+
+  var path;
+
+  before(function (done) {
+    tmp.file(function (err, _path, fd) {
+      if (err) { return done(err); }
+
+      path = _path;
+      fs.close(fd, done);
+    });
+  });
 
   it('should set an attribute', function (done) {
     xattr.set(path, attribute, payload, done);
@@ -75,6 +103,10 @@ describe('xattr#async', function () {
       assert.equal(val, undefined);
       done();
     });
+  });
+
+  after(function (done) {
+    fs.unlink(path, done);
   });
 
 });

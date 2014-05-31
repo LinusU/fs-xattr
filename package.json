@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "mocha": "~1.16.2"
+    "mocha": "~1.16.2",
+    "tmp": "0.0.23"
   }
 }
