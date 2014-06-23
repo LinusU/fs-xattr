@@ -3,7 +3,7 @@
 #include <node.h>
 #include <node_buffer.h>
 
-#include <errno.h>
+#include <stdlib.h>
 #include <sys/xattr.h>
 
 #include "error.cc"

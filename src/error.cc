@@ -1,4 +1,15 @@
 
+#include <errno.h>
+#include <string.h>
+
+#ifdef __APPLE__
+#define E_ENOATTR ENOATTR
+#define S_ENOATTR "ENOATTR"
+#else
+#define E_ENOATTR ENODATA
+#define S_ENOATTR "ENODATA"
+#endif
+
 using namespace v8;
 
 Local<String> errorDescription(int e) {
@@ -7,7 +18,7 @@ Local<String> errorDescription(int e) {
 
 Local<String> errorDescriptionForGet(int e) {
   switch (e) {
-    case ENOATTR: return String::New("The extended attribute does not exist.");
+    case E_ENOATTR: return String::New("The extended attribute does not exist.");
     case ENOTSUP: return String::New("The file system does not support extended attributes or has the feature disabled.");
     case ERANGE: return String::New("value (as indicated by size) is too small to hold the extended attribute data.");
     case EPERM: return String::New("The named attribute is not permitted for this type of object.");
@@ -26,7 +37,7 @@ Local<String> errorDescriptionForGet(int e) {
 Local<String> errorDescriptionForSet(int e) {
   switch (e) {
     case EEXIST: return String::New("options contains XATTR_CREATE and the named attribute already exists.");
-    case ENOATTR: return String::New("options is set to XATTR_REPLACE and the named attribute does not exist.");
+    case E_ENOATTR: return String::New("options is set to XATTR_REPLACE and the named attribute does not exist.");
     case ENOTSUP: return String::New("The file system does not support extended attributes or has the feature disabled.");
     case EROFS: return String::New("The file system is mounted read-only.");
     case ERANGE: return String::New("The data size of the attribute is out of range (some attributes have size restrictions).");
@@ -82,7 +93,7 @@ Local<String> errorCode(int e) {
     case EDOM: return String::New("EDOM");
     case ERANGE: return String::New("ERANGE");
     /* Special */
-    case ENOATTR: return String::New("ENOATTR");
+    case E_ENOATTR: return String::New(S_ENOATTR);
     case ENOTSUP: return String::New("ENOTSUP");
     case ENAMETOOLONG: return String::New("ENAMETOOLONG");
     case ELOOP: return String::New("ELOOP");
@@ -99,4 +110,3 @@ void ThrowExceptionErrno(int e) {
 
   ThrowException(err);
 }
-
