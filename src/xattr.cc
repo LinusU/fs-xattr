@@ -1,20 +1,30 @@
 
-#include <v8.h>
 #include <node.h>
+#include <nan.h>
 #include <node_buffer.h>
 
 #include <stdlib.h>
 #include <sys/xattr.h>
 
+using v8::FunctionTemplate;
+using v8::Handle;
+using v8::HandleScope;
+using v8::String;
+
+using v8::Local;
+using v8::Object;
+using v8::Integer;
+using v8::Value;
+using v8::Function;
+using v8::Array;
+
 #include "error.cc"
 
-using namespace v8;
+NAN_METHOD(xattr_get) {
+  NanScope();
 
-Handle<Value> xattr_get(const Arguments& args) {
-  HandleScope scope;
-
-  String::AsciiValue aFilename(args[0]);
-  String::AsciiValue aAttribute(args[1]);
+  NanAsciiString aFilename(args[0]);
+  NanAsciiString aAttribute(args[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -29,10 +39,10 @@ Handle<Value> xattr_get(const Arguments& args) {
 
   if (valueLen == -1) {
     ThrowExceptionErrno(errno);
-    return scope.Close(Undefined());
+    NanReturnUndefined();
   }
 
-  node::Buffer *slowBuffer = node::Buffer::New((size_t) valueLen);
+  Local<Object> slowBuffer = NanNewBufferHandle((size_t) valueLen);
 
 #ifdef __APPLE__
   valueLen = getxattr(filename, attribute, node::Buffer::Data(slowBuffer), (size_t) valueLen, 0, 0);
@@ -42,22 +52,22 @@ Handle<Value> xattr_get(const Arguments& args) {
 
   if (valueLen == -1) {
     ThrowExceptionErrno(errno);
-    return scope.Close(Undefined());
+    NanReturnUndefined();
   }
 
-  Local<Object> globalObj = Context::GetCurrent()->Global();
-  Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(String::NewSymbol("Buffer")));
-  Handle<Value> constructorArgs[3] = { slowBuffer->handle_, Integer::New(valueLen), Integer::New(0) };
+  Local<Object> globalObj = NanGetCurrentContext()->Global();
+  Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(NanNew("Buffer")));
+  Handle<Value> constructorArgs[3] = { slowBuffer, NanNew<Integer>(valueLen), NanNew<Integer>(0) };
   Local<Object> actualBuffer = bufferConstructor->NewInstance(3, constructorArgs);
 
-  return scope.Close(actualBuffer);
+  NanReturnValue(actualBuffer);
 }
 
-Handle<Value> xattr_set(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(xattr_set) {
+  NanScope();
 
-  String::AsciiValue aFilename(args[0]);
-  String::AsciiValue aAttribute(args[1]);
+  NanAsciiString aFilename(args[0]);
+  NanAsciiString aAttribute(args[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -74,16 +84,16 @@ Handle<Value> xattr_set(const Arguments& args) {
 
   if (res == -1) {
     ThrowExceptionErrno(errno);
-    return scope.Close(Undefined());
+    NanReturnUndefined();
   }
 
-  return scope.Close(Undefined());
+  NanReturnUndefined();
 }
 
-Handle<Value> xattr_list(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(xattr_list) {
+  NanScope();
 
-  String::AsciiValue aFilename(args[0]);
+  NanAsciiString aFilename(args[0]);
   const char *filename = *aFilename;
 
   ssize_t valueLen;
@@ -96,7 +106,7 @@ Handle<Value> xattr_list(const Arguments& args) {
 
   if (valueLen == -1) {
     ThrowExceptionErrno(errno);
-    return scope.Close(Undefined());
+    NanReturnUndefined();
   }
 
   char *result = (char *) malloc((size_t) valueLen);
@@ -109,7 +119,7 @@ Handle<Value> xattr_list(const Arguments& args) {
 
   if (valueLen == -1) {
     ThrowExceptionErrno(errno);
-    return scope.Close(Undefined());
+    NanReturnUndefined();
   }
 
   Local<Array> arr = Array::New(0);
@@ -118,22 +128,22 @@ Handle<Value> xattr_list(const Arguments& args) {
   ssize_t valuePos = 0;
   while (valuePos < valueLen) {
     size_t len = strlen(result);
-    arr->Set(arrayPos, String::New(result, len));
+    arr->Set(arrayPos, NanNew<String>(result, len));
     valuePos += len + 1;
     arrayPos++;
   }
 
-  arr->Set(String::NewSymbol("length"), Integer::New(arrayPos));
+  arr->Set(NanNew("length"), NanNew<Integer>(arrayPos));
   free(result);
 
-  return scope.Close(arr);
+  NanReturnValue(arr);
 }
 
-Handle<Value> xattr_remove(const Arguments& args) {
-  HandleScope scope;
+NAN_METHOD(xattr_remove) {
+  NanScope();
 
-  String::AsciiValue aFilename(args[0]);
-  String::AsciiValue aAttribute(args[1]);
+  NanAsciiString aFilename(args[0]);
+  NanAsciiString aAttribute(args[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -146,17 +156,17 @@ Handle<Value> xattr_remove(const Arguments& args) {
 
   if (res == -1) {
     ThrowExceptionErrno(errno);
-    return scope.Close(Undefined());
+    NanReturnUndefined();
   }
 
-  return scope.Close(Undefined());
+  NanReturnUndefined();
 }
 
 void Initialize(Handle<Object> exports) {
-  exports->Set(String::NewSymbol("get"), FunctionTemplate::New(xattr_get)->GetFunction());
-  exports->Set(String::NewSymbol("set"), FunctionTemplate::New(xattr_set)->GetFunction());
-  exports->Set(String::NewSymbol("list"), FunctionTemplate::New(xattr_list)->GetFunction());
-  exports->Set(String::NewSymbol("remove"), FunctionTemplate::New(xattr_remove)->GetFunction());
+  exports->Set(NanNew("get"), NanNew<FunctionTemplate>(xattr_get)->GetFunction());
+  exports->Set(NanNew("set"), NanNew<FunctionTemplate>(xattr_set)->GetFunction());
+  exports->Set(NanNew("list"), NanNew<FunctionTemplate>(xattr_list)->GetFunction());
+  exports->Set(NanNew("remove"), NanNew<FunctionTemplate>(xattr_remove)->GetFunction());
 }
 
 NODE_MODULE(xattr, Initialize)
