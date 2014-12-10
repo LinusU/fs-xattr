@@ -5,8 +5,8 @@
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "main": "index.js",
   "devDependencies": {
-    "mocha": "~1.16.2",
-    "tmp": "0.0.23"
+    "fs-temp": "^0.1.1",
+    "mocha": "^2.0.1"
   },
   "scripts": {
     "test": "mocha"

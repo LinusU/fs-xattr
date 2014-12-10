@@ -2,7 +2,7 @@
 var xattr = require('../');
 
 var fs = require('fs');
-var tmp = require('tmp');
+var temp = require('fs-temp');
 var assert = require('assert');
 var crypto = require('crypto');
 
@@ -13,13 +13,8 @@ describe('xattr#sync', function () {
 
   var path;
 
-  before(function (done) {
-    tmp.file(function (err, _path, fd) {
-      if (err) { return done(err); }
-
-      path = _path;
-      fs.close(fd, done);
-    });
+  before(function () {
+    path = temp.writeFileSync('');
   });
 
   it('should set an attribute', function () {
@@ -61,13 +56,8 @@ describe('xattr#async', function () {
 
   var path;
 
-  before(function (done) {
-    tmp.file(function (err, _path, fd) {
-      if (err) { return done(err); }
-
-      path = _path;
-      fs.close(fd, done);
-    });
+  before(function () {
+    path = temp.writeFileSync('');
   });
 
   it('should set an attribute', function (done) {
@@ -115,13 +105,8 @@ describe('xattr#utf8', function () {
 
   var path;
 
-  before(function (done) {
-    tmp.file({ prefix: '∞ ' }, function (err, _path, fd) {
-      if (err) { return done(err); }
-
-      path = _path;
-      fs.close(fd, done);
-    });
+  before(function () {
+    path = temp.template('∞ %s').writeFileSync('');
   });
 
   it('should set an attribute', function (done) {
