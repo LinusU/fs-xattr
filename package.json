@@ -16,6 +16,6 @@
     "url": "http://github.com/LinusU/fs-xattr.git"
   },
   "dependencies": {
-    "nan": "^1.4.1"
+    "nan": "^1.5.1"
   }
 }

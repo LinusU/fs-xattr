@@ -57,7 +57,7 @@ NAN_METHOD(xattr_get) {
 
   Local<Object> globalObj = NanGetCurrentContext()->Global();
   Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(NanNew("Buffer")));
-  Handle<Value> constructorArgs[3] = { slowBuffer, NanNew<Integer>(valueLen), NanNew<Integer>(0) };
+  Handle<Value> constructorArgs[3] = { slowBuffer, NanNew<Integer>((int32_t)valueLen), NanNew<Integer>(0) };
   Local<Object> actualBuffer = bufferConstructor->NewInstance(3, constructorArgs);
 
   NanReturnValue(actualBuffer);
