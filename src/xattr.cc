@@ -122,7 +122,7 @@ NAN_METHOD(xattr_list) {
     NanReturnUndefined();
   }
 
-  Local<Array> arr = Array::New(0);
+  Local<Array> arr = NanNew<Array>(0);
 
   int arrayPos = 0;
   ssize_t valuePos = 0;
