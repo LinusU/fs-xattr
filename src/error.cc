@@ -1,4 +1,7 @@
 
+#include <node.h>
+#include <nan.h>
+
 #include <errno.h>
 #include <string.h>
 
@@ -10,9 +13,9 @@
 #define S_ENOATTR "ENODATA"
 #endif
 
-const char* errorDescription(int e) {
-  return strerror(e);
-}
+using v8::Local;
+using v8::Object;
+using v8::Integer;
 
 const char* errorDescriptionForGet(int e) {
   switch (e) {
@@ -28,7 +31,7 @@ const char* errorDescriptionForGet(int e) {
     case ELOOP: return "Too many symbolic links were encountered in translating the pathname.";
     case EFAULT: return "path or name points to an invalid address.";
     case EIO: return "An I/O error occurred while reading from or writing to the file system.";
-    default: return errorDescription(e);
+    default: return strerror(e);
   }
 }
 
@@ -49,7 +52,7 @@ const char* errorDescriptionForSet(int e) {
     case EIO: return "An I/O error occurred while reading from or writing to the file system.";
     case E2BIG: return "The data size of the extended attribute is too large.";
     case ENOSPC: return "Not enough space left on the file system.";
-    default: return errorDescription(e);
+    default: return strerror(e);
   }
 }
 
@@ -101,7 +104,6 @@ const char* errorCode(int e) {
 }
 
 void ThrowExceptionErrno(int e) {
-
   Local<Object> err = v8::Exception::Error(NanNew(errorDescriptionForGet(e)))->ToObject();
   err->Set(NanNew("errno"), NanNew<Integer>(e));
   err->Set(NanNew("code"), NanNew(errorCode(e)));

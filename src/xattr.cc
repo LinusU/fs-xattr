@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <sys/xattr.h>
 
+#include "error.h"
+
 using v8::FunctionTemplate;
 using v8::Handle;
-using v8::HandleScope;
 using v8::String;
 
 using v8::Local;
@@ -17,8 +18,6 @@ using v8::Integer;
 using v8::Value;
 using v8::Function;
 using v8::Array;
-
-#include "error.cc"
 
 NAN_METHOD(xattr_get) {
   NanScope();
