@@ -106,5 +106,5 @@ void ThrowExceptionErrno(int e) {
   err->Set(NanNew("errno"), NanNew<Integer>(e));
   err->Set(NanNew("code"), NanNew(errorCode(e)));
 
-  NanThrowError(err);
+  NanThrowError((v8::Handle<v8::Value>) err);
 }
