@@ -5,11 +5,12 @@
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "main": "index.js",
   "devDependencies": {
-    "fs-temp": "^0.1.1",
-    "mocha": "^2.0.1"
+    "fs-temp": "^0.1.2",
+    "mocha": "^2.2.5",
+    "standard": "^4.5.4"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "standard && mocha"
   },
   "repository": {
     "type": "git",
