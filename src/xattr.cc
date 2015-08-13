@@ -127,8 +127,8 @@ NAN_METHOD(xattr_list) {
   int arrayPos = 0;
   ssize_t valuePos = 0;
   while (valuePos < valueLen) {
-    size_t len = strlen(result);
-    arr->Set(arrayPos, NanNew<String>(result, len));
+    size_t len = strlen(result + valuePos);
+    arr->Set(arrayPos, NanNew<String>(result + valuePos, len));
     valuePos += len + 1;
     arrayPos++;
   }

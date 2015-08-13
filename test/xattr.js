@@ -7,8 +7,10 @@ var temp = require('fs-temp')
 var assert = require('assert')
 var crypto = require('crypto')
 
-var attribute = 'com.linusu.test'
-var payload = crypto.randomBytes(24).toString('hex')
+var attribute0 = 'com.linusu.test'
+var attribute1 = 'com.linusu.secondary'
+var payload0 = crypto.randomBytes(24).toString('hex')
+var payload1 = crypto.randomBytes(24).toString('hex')
 
 describe('xattr#sync', function () {
 
@@ -19,27 +21,30 @@ describe('xattr#sync', function () {
   })
 
   it('should set an attribute', function () {
-    xattr.setSync(path, attribute, payload)
+    xattr.setSync(path, attribute0, payload0)
+    xattr.setSync(path, attribute1, payload1)
   })
 
   it('should get an attribute', function () {
-    var val = xattr.getSync(path, attribute)
+    var val = xattr.getSync(path, attribute0)
     assert(Buffer.isBuffer(val))
-    assert.equal(val, payload)
+    assert.equal(val, payload0)
   })
 
   it('should list the attributes', function () {
     var val = xattr.listSync(path)
-    assert.ok(~val.indexOf(attribute))
+    assert.ok(~val.indexOf(attribute0))
+    assert.ok(~val.indexOf(attribute1))
   })
 
   it('should remove the attribute', function () {
-    xattr.removeSync(path, attribute)
+    xattr.removeSync(path, attribute0)
+    xattr.removeSync(path, attribute1)
   })
 
   it('should give useful errors', function () {
     assert.throws(function () {
-      xattr.getSync(path, attribute)
+      xattr.getSync(path, attribute0)
     }, function (err) {
       assert.equal(err.errno, 93)
       assert.equal(err.code, 'ENOATTR')
@@ -62,14 +67,17 @@ describe('xattr#async', function () {
   })
 
   it('should set an attribute', function (done) {
-    xattr.set(path, attribute, payload, done)
+    xattr.set(path, attribute0, payload0, function (err) {
+      assert.ifError(err)
+      xattr.set(path, attribute1, payload1, done)
+    })
   })
 
   it('should get an attribute', function (done) {
-    xattr.get(path, attribute, function (err, val) {
+    xattr.get(path, attribute0, function (err, val) {
       assert.ifError(err)
       assert(Buffer.isBuffer(val))
-      assert.equal(val, payload)
+      assert.equal(val, payload0)
       done()
     })
   })
@@ -77,17 +85,21 @@ describe('xattr#async', function () {
   it('should list the attributes', function (done) {
     xattr.list(path, function (err, list) {
       assert.ifError(err)
-      assert.ok(~list.indexOf(attribute))
+      assert.ok(~list.indexOf(attribute0))
+      assert.ok(~list.indexOf(attribute1))
       done()
     })
   })
 
   it('should remove the attribute', function (done) {
-    xattr.remove(path, attribute, done)
+    xattr.remove(path, attribute0, function (err) {
+      assert.ifError(err)
+      xattr.remove(path, attribute1, done)
+    })
   })
 
   it('should give useful errors', function (done) {
-    xattr.get(path, attribute, function (err, val) {
+    xattr.get(path, attribute0, function (err, val) {
       assert(err)
       assert.equal(err.errno, 93)
       assert.equal(err.code, 'ENOATTR')
@@ -111,14 +123,14 @@ describe('xattr#utf8', function () {
   })
 
   it('should set an attribute', function (done) {
-    xattr.set(path, attribute, payload, done)
+    xattr.set(path, attribute0, payload0, done)
   })
 
   it('should get an attribute', function (done) {
-    xattr.get(path, attribute, function (err, val) {
+    xattr.get(path, attribute0, function (err, val) {
       assert.ifError(err)
       assert(Buffer.isBuffer(val))
-      assert.equal(val, payload)
+      assert.equal(val, payload0)
       done()
     })
   })
@@ -126,17 +138,17 @@ describe('xattr#utf8', function () {
   it('should list the attributes', function (done) {
     xattr.list(path, function (err, list) {
       assert.ifError(err)
-      assert.ok(~list.indexOf(attribute))
+      assert.ok(~list.indexOf(attribute0))
       done()
     })
   })
 
   it('should remove the attribute', function (done) {
-    xattr.remove(path, attribute, done)
+    xattr.remove(path, attribute0, done)
   })
 
   it('should give useful errors', function (done) {
-    xattr.get(path, attribute, function (err, val) {
+    xattr.get(path, attribute0, function (err, val) {
       assert(err)
       assert.equal(err.errno, 93)
       assert.equal(err.code, 'ENOATTR')
