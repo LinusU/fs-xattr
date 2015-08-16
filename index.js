@@ -17,7 +17,7 @@ function defaultCallback (err) {
 function validateArgument (key, val) {
   switch (key) {
     case 'path':
-      if (typeof val === 'string') return new Buffer(val).toString('binary')
+      if (typeof val === 'string') return val
       throw new TypeError('`path` must be a string')
     case 'attr':
       if (typeof val === 'string') return val

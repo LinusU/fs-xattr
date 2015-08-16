@@ -23,8 +23,8 @@ using v8::Array;
 NAN_METHOD(xattr_get) {
   NanScope();
 
-  NanAsciiString aFilename(args[0]);
-  NanAsciiString aAttribute(args[1]);
+  NanUtf8String aFilename(args[0]);
+  NanUtf8String aAttribute(args[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -66,8 +66,8 @@ NAN_METHOD(xattr_get) {
 NAN_METHOD(xattr_set) {
   NanScope();
 
-  NanAsciiString aFilename(args[0]);
-  NanAsciiString aAttribute(args[1]);
+  NanUtf8String aFilename(args[0]);
+  NanUtf8String aAttribute(args[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -93,7 +93,7 @@ NAN_METHOD(xattr_set) {
 NAN_METHOD(xattr_list) {
   NanScope();
 
-  NanAsciiString aFilename(args[0]);
+  NanUtf8String aFilename(args[0]);
   const char *filename = *aFilename;
 
   ssize_t valueLen;
@@ -142,8 +142,8 @@ NAN_METHOD(xattr_list) {
 NAN_METHOD(xattr_remove) {
   NanScope();
 
-  NanAsciiString aFilename(args[0]);
-  NanAsciiString aAttribute(args[1]);
+  NanUtf8String aFilename(args[0]);
+  NanUtf8String aAttribute(args[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
