@@ -21,10 +21,8 @@ using v8::Function;
 using v8::Array;
 
 NAN_METHOD(xattr_get) {
-  NanScope();
-
-  NanUtf8String aFilename(args[0]);
-  NanUtf8String aAttribute(args[1]);
+  Nan::Utf8String aFilename(info[0]);
+  Nan::Utf8String aAttribute(info[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -38,11 +36,10 @@ NAN_METHOD(xattr_get) {
 #endif
 
   if (valueLen == -1) {
-    ThrowExceptionErrno(errno);
-    NanReturnUndefined();
+    return ThrowExceptionErrno(errno);
   }
 
-  Local<Object> slowBuffer = NanNewBufferHandle((size_t) valueLen);
+  Local<Object> slowBuffer = Nan::NewBuffer((uint32_t) valueLen).ToLocalChecked();
 
 #ifdef __APPLE__
   valueLen = getxattr(filename, attribute, node::Buffer::Data(slowBuffer), (size_t) valueLen, 0, 0);
@@ -51,28 +48,25 @@ NAN_METHOD(xattr_get) {
 #endif
 
   if (valueLen == -1) {
-    ThrowExceptionErrno(errno);
-    NanReturnUndefined();
+    return ThrowExceptionErrno(errno);
   }
 
-  Local<Object> globalObj = NanGetCurrentContext()->Global();
-  Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(NanNew("Buffer")));
-  Handle<Value> constructorArgs[3] = { slowBuffer, NanNew<Integer>((int32_t)valueLen), NanNew<Integer>(0) };
+  Local<Object> globalObj = Nan::GetCurrentContext()->Global();
+  Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(Nan::New("Buffer").ToLocalChecked()));
+  Handle<Value> constructorArgs[3] = { slowBuffer, Nan::New<Integer>((int32_t) valueLen), Nan::New<Integer>(0) };
   Local<Object> actualBuffer = bufferConstructor->NewInstance(3, constructorArgs);
 
-  NanReturnValue(actualBuffer);
+  info.GetReturnValue().Set(actualBuffer);
 }
 
 NAN_METHOD(xattr_set) {
-  NanScope();
-
-  NanUtf8String aFilename(args[0]);
-  NanUtf8String aAttribute(args[1]);
+  Nan::Utf8String aFilename(info[0]);
+  Nan::Utf8String aAttribute(info[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
 
-  Local<Object> bufferObj = args[2]->ToObject();
+  Local<Object> bufferObj = info[2]->ToObject();
   const char *value = node::Buffer::Data(bufferObj);
   size_t valueLen = node::Buffer::Length(bufferObj);
 
@@ -83,17 +77,12 @@ NAN_METHOD(xattr_set) {
 #endif
 
   if (res == -1) {
-    ThrowExceptionErrno(errno);
-    NanReturnUndefined();
+    return ThrowExceptionErrno(errno);
   }
-
-  NanReturnUndefined();
 }
 
 NAN_METHOD(xattr_list) {
-  NanScope();
-
-  NanUtf8String aFilename(args[0]);
+  Nan::Utf8String aFilename(info[0]);
   const char *filename = *aFilename;
 
   ssize_t valueLen;
@@ -105,8 +94,7 @@ NAN_METHOD(xattr_list) {
 #endif
 
   if (valueLen == -1) {
-    ThrowExceptionErrno(errno);
-    NanReturnUndefined();
+    return ThrowExceptionErrno(errno);
   }
 
   char *result = (char *) malloc((size_t) valueLen);
@@ -118,32 +106,29 @@ NAN_METHOD(xattr_list) {
 #endif
 
   if (valueLen == -1) {
-    ThrowExceptionErrno(errno);
-    NanReturnUndefined();
+    return ThrowExceptionErrno(errno);
   }
 
-  Local<Array> arr = NanNew<Array>(0);
+  Local<Array> arr = Nan::New<Array>(0);
 
   int arrayPos = 0;
   ssize_t valuePos = 0;
   while (valuePos < valueLen) {
     size_t len = strlen(result + valuePos);
-    arr->Set(arrayPos, NanNew<String>(result + valuePos, len));
+    Nan::Set(arr, arrayPos, Nan::New<String>(result + valuePos, len).ToLocalChecked());
     valuePos += len + 1;
     arrayPos++;
   }
 
-  arr->Set(NanNew("length"), NanNew<Integer>(arrayPos));
+  Nan::Set(arr, Nan::New("length").ToLocalChecked(), Nan::New<Integer>(arrayPos));
   free(result);
 
-  NanReturnValue(arr);
+  info.GetReturnValue().Set(arr);
 }
 
 NAN_METHOD(xattr_remove) {
-  NanScope();
-
-  NanUtf8String aFilename(args[0]);
-  NanUtf8String aAttribute(args[1]);
+  Nan::Utf8String aFilename(info[0]);
+  Nan::Utf8String aAttribute(info[1]);
 
   const char *filename = *aFilename;
   const char *attribute = *aAttribute;
@@ -155,18 +140,19 @@ NAN_METHOD(xattr_remove) {
 #endif
 
   if (res == -1) {
-    ThrowExceptionErrno(errno);
-    NanReturnUndefined();
+    return ThrowExceptionErrno(errno);
   }
-
-  NanReturnUndefined();
 }
 
-void Initialize(Handle<Object> exports) {
-  exports->Set(NanNew("get"), NanNew<FunctionTemplate>(xattr_get)->GetFunction());
-  exports->Set(NanNew("set"), NanNew<FunctionTemplate>(xattr_set)->GetFunction());
-  exports->Set(NanNew("list"), NanNew<FunctionTemplate>(xattr_list)->GetFunction());
-  exports->Set(NanNew("remove"), NanNew<FunctionTemplate>(xattr_remove)->GetFunction());
+NAN_MODULE_INIT(Initialize) {
+  Nan::Set(target, Nan::New("get").ToLocalChecked(),
+    Nan::GetFunction(Nan::New<FunctionTemplate>(xattr_get)).ToLocalChecked());
+  Nan::Set(target, Nan::New("set").ToLocalChecked(),
+    Nan::GetFunction(Nan::New<FunctionTemplate>(xattr_set)).ToLocalChecked());
+  Nan::Set(target, Nan::New("list").ToLocalChecked(),
+    Nan::GetFunction(Nan::New<FunctionTemplate>(xattr_list)).ToLocalChecked());
+  Nan::Set(target, Nan::New("remove").ToLocalChecked(),
+    Nan::GetFunction(Nan::New<FunctionTemplate>(xattr_remove)).ToLocalChecked());
 }
 
 NODE_MODULE(xattr, Initialize)

@@ -104,9 +104,10 @@ const char* errorCode(int e) {
 }
 
 void ThrowExceptionErrno(int e) {
-  Local<Object> err = v8::Exception::Error(NanNew(errorDescriptionForGet(e)))->ToObject();
-  err->Set(NanNew("errno"), NanNew<Integer>(e));
-  err->Set(NanNew("code"), NanNew(errorCode(e)));
+  Local<Object> err = Nan::Error(errorDescriptionForGet(e))->ToObject();
 
-  NanThrowError((v8::Handle<v8::Value>) err);
+  Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New<Integer>(e));
+  Nan::Set(err, Nan::New("code").ToLocalChecked(), Nan::New(errorCode(e)).ToLocalChecked());
+
+  Nan::ThrowError((v8::Local<v8::Value>) err);
 }
