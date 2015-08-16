@@ -1,6 +1,6 @@
 {
   "name": "fs-xattr",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "license": "MIT",
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "main": "index.js",
