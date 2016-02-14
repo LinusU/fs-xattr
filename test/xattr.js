@@ -13,7 +13,6 @@ var payload0 = crypto.randomBytes(24).toString('hex')
 var payload1 = crypto.randomBytes(24).toString('hex')
 
 describe('xattr#sync', function () {
-
   var path
 
   before(function () {
@@ -55,11 +54,9 @@ describe('xattr#sync', function () {
   after(function (done) {
     fs.unlink(path, done)
   })
-
 })
 
 describe('xattr#async', function () {
-
   var path
 
   before(function () {
@@ -111,11 +108,9 @@ describe('xattr#async', function () {
   after(function (done) {
     fs.unlink(path, done)
   })
-
 })
 
 describe('xattr#utf8', function () {
-
   var path
 
   before(function () {
@@ -160,5 +155,4 @@ describe('xattr#utf8', function () {
   after(function (done) {
     fs.unlink(path, done)
   })
-
 })

@@ -5,9 +5,9 @@
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "main": "index.js",
   "devDependencies": {
-    "fs-temp": "^0.1.2",
+    "fs-temp": "^1.0.0",
     "mocha": "^2.2.5",
-    "standard": "^4.5.4"
+    "standard": "^6.0.5"
   },
   "scripts": {
     "test": "standard && mocha"
