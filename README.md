@@ -7,17 +7,18 @@ There are already some libraries for this, why use `fs-xattr`?
 - Very useful errors
 - No limits on value size
 - Clean and easy api
+- Proper asynchronous implementation
 
 ## Installation
 
 ```sh
-npm install fs-xattr
+npm install --save fs-xattr
 ```
 
 ## Usage
 
 ```javascript
-var xattr = require('fs-xattr');
+var xattr = require('fs-xattr')
 ```
 
 ## API
@@ -30,7 +31,7 @@ Get extended attribute `attr` from file at `path`.
 
 ### xattr.getSync(path, attr)
 
-Synchronus version of `xattr.get`
+Synchronous version of `xattr.get`
 
 ### xattr.set(path, attr, value, cb)
 
@@ -42,7 +43,7 @@ Set extended attribute `attr` to `value` on file at `path`.
 
 ### xattr.setSync(path, attr, value)
 
-Synchronus version of `xattr.set`
+Synchronous version of `xattr.set`
 
 ### xattr.remove(path, attr, cb)
 
@@ -52,7 +53,7 @@ Remove extended attribute `attr` on file at `path`.
 
 ### xattr.removeSync(path, attr)
 
-Synchronus version of `xattr.remove`
+Synchronous version of `xattr.remove`
 
 ### xattr.list(path, cb)
 
@@ -62,12 +63,4 @@ List all attributes on file at `path`.
 
 ### xattr.listSync(path)
 
-Synchronus version of `xattr.list`
-
-## Asynchronus?
-
-AFAIK, neither the Linux or Darwin kernel supports manipulating extended attributes asynchronus. Thus the library currently wraps the synchronus calls with a simple `process.nextTick` to simulate non-blocking io.
-
-One solution is to delegate the action away to another thread that will return a message upon completion. I think that this is more or less how node.js does fs internaly.
-
-I obviously need to do more research on this.
+Synchronous version of `xattr.list`

@@ -103,11 +103,17 @@ const char* errorCode(int e) {
   }
 }
 
-void ThrowExceptionErrno(int e) {
-  Local<Object> err = Nan::Error(errorDescriptionForGet(e))->ToObject();
+v8::Local<v8::Value> MakeXattrError(int e) {
+  Nan::EscapableHandleScope scope;
+
+  v8::Local<v8::Object> err = Nan::Error(errorDescriptionForGet(e))->ToObject();
 
   Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New<Integer>(e));
   Nan::Set(err, Nan::New("code").ToLocalChecked(), Nan::New(errorCode(e)).ToLocalChecked());
 
-  Nan::ThrowError((v8::Local<v8::Value>) err);
+  return scope.Escape(err);
+}
+
+void ThrowExceptionErrno(int e) {
+  Nan::ThrowError(MakeXattrError(e));
 }

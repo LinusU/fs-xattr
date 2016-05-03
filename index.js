@@ -1,15 +1,5 @@
 var addon = require('./build/Release/xattr')
 
-function fakeAsync (fn, args, cb) {
-  process.nextTick(function () {
-    try {
-      cb(null, addon[fn].apply(addon, args))
-    } catch (err) {
-      cb(err)
-    }
-  })
-}
-
 function defaultCallback (err) {
   if (err) throw err
 }
@@ -42,7 +32,7 @@ exports.get = function get (path, attr, cb) {
   attr = validateArgument('attr', attr)
   cb = validateArgument('cb', cb)
 
-  fakeAsync('get', [path, attr], cb)
+  addon.get(path, attr, cb)
 }
 
 exports.set = function set (path, attr, value, cb) {
@@ -51,14 +41,14 @@ exports.set = function set (path, attr, value, cb) {
   value = validateArgument('value', value)
   cb = validateArgument('cb', cb)
 
-  fakeAsync('set', [path, attr, value], cb)
+  addon.set(path, attr, value, cb)
 }
 
 exports.list = function list (path, cb) {
   path = validateArgument('path', path)
   cb = validateArgument('cb', cb)
 
-  fakeAsync('list', [path], cb)
+  addon.list(path, cb)
 }
 
 exports.remove = function remove (path, attr, cb) {
@@ -66,7 +56,7 @@ exports.remove = function remove (path, attr, cb) {
   attr = validateArgument('attr', attr)
   cb = validateArgument('cb', cb)
 
-  fakeAsync('remove', [path, attr], cb)
+  addon.remove(path, attr, cb)
 }
 
 /* Sync methods */
@@ -75,7 +65,7 @@ exports.getSync = function getSync (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
-  return addon.get(path, attr)
+  return addon.getSync(path, attr)
 }
 
 exports.setSync = function setSync (path, attr, value) {
@@ -83,18 +73,18 @@ exports.setSync = function setSync (path, attr, value) {
   attr = validateArgument('attr', attr)
   value = validateArgument('value', value)
 
-  return addon.set(path, attr, value)
+  return addon.setSync(path, attr, value)
 }
 
 exports.listSync = function listSync (path) {
   path = validateArgument('path', path)
 
-  return addon.list(path)
+  return addon.listSync(path)
 }
 
 exports.removeSync = function removeSync (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
-  return addon.remove(path, attr)
+  return addon.removeSync(path, attr)
 }
