@@ -11,7 +11,7 @@
 
 class XattrWorker : public Nan::AsyncWorker {
 public:
-  XattrWorker(Nan::Callback* cb) : Nan::AsyncWorker(cb) {}
+  XattrWorker(Nan::Callback* cb) : Nan::AsyncWorker(cb), errorNumber(0) {}
 
   virtual void WorkComplete() {
     Nan::HandleScope scope;
@@ -23,7 +23,7 @@ public:
     }
 
     delete callback;
-    callback = nullptr;
+    callback = NULL;
   }
 
 protected:
@@ -40,7 +40,7 @@ protected:
   }
 
 private:
-  int errorNumber = 0;
+  int errorNumber;
 };
 
 class SetWorker : public XattrWorker {
@@ -73,9 +73,9 @@ public:
   }
 
 private:
-  std::string *filename = nullptr;
-  std::string *attribute = nullptr;
-  std::string *value = nullptr;
+  std::string *filename;
+  std::string *attribute;
+  std::string *value;
 };
 
 class GetWorker : public XattrWorker {
@@ -130,10 +130,10 @@ protected:
   }
 
 private:
-  size_t resultLength = 0;
-  char *resultData = nullptr;
-  std::string *filename = nullptr;
-  std::string *attribute = nullptr;
+  size_t resultLength;
+  char *resultData;
+  std::string *filename;
+  std::string *attribute;
 };
 
 class ListWorker : public XattrWorker {
@@ -187,9 +187,9 @@ protected:
   }
 
 private:
-  size_t resultLength = 0;
-  char *resultData = nullptr;
-  std::string *filename = nullptr;
+  size_t resultLength;
+  char *resultData;
+  std::string *filename;
 };
 
 class RemoveWorker : public XattrWorker {
@@ -218,8 +218,8 @@ public:
   }
 
 private:
-  std::string *filename = nullptr;
-  std::string *attribute = nullptr;
+  std::string *filename;
+  std::string *attribute;
 };
 
 NAN_METHOD(xattr_set) {
