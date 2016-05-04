@@ -10,7 +10,8 @@
     "standard": "^7.0.0"
   },
   "scripts": {
-    "test": "standard && mocha"
+    "test": "standard && mocha",
+    "lint": "standard"
   },
   "repository": {
     "type": "git",
