@@ -1,0 +1,37 @@
+language: node_js
+
+# For Node.js 4 and up we need to install C++11 compatible compiler
+matrix:
+  include:
+
+    # Travis' Linux machines doesn't support xattrs, just try building
+    - node_js: '0.10'
+      install: [npm install --ignore-scripts]
+      script: [npm install, npm run lint]
+      os: linux
+    - node_js: '0.12'
+      install: [npm install --ignore-scripts]
+      script: [npm install, npm run lint]
+      os: linux
+    - node_js: '4'
+      install: [npm install --ignore-scripts]
+      script: [npm install, npm run lint]
+      addons: {apt: {sources: [ubuntu-toolchain-r-test], packages: [g++-4.8]}}
+      env: [CXX=g++-4.8]
+      os: linux
+    - node_js: '6'
+      install: [npm install --ignore-scripts]
+      script: [npm install, npm run lint]
+      addons: {apt: {sources: [ubuntu-toolchain-r-test], packages: [g++-4.8]}}
+      env: [CXX=g++-4.8]
+      os: linux
+
+    # Normal build for OS X
+    - node_js: '0.10'
+      os: osx
+    - node_js: '0.12'
+      os: osx
+    - node_js: '4'
+      os: osx
+    - node_js: '6'
+      os: osx
