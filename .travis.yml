@@ -25,6 +25,12 @@ matrix:
       addons: {apt: {sources: [ubuntu-toolchain-r-test], packages: [g++-4.8]}}
       env: [CXX=g++-4.8]
       os: linux
+    - node_js: '7'
+      install: [npm install --ignore-scripts]
+      script: [npm install, npm run lint]
+      addons: {apt: {sources: [ubuntu-toolchain-r-test], packages: [g++-4.8]}}
+      env: [CXX=g++-4.8]
+      os: linux
 
     # Normal build for OS X
     - node_js: '0.10'
@@ -34,4 +40,6 @@ matrix:
     - node_js: '4'
       os: osx
     - node_js: '6'
+      os: osx
+    - node_js: '7'
       os: osx
