@@ -42,8 +42,8 @@ NAN_METHOD(xattr_get_sync) {
 
   v8::Local<v8::Object> globalObj = Nan::GetCurrentContext()->Global();
   v8::Local<v8::Function> bufferConstructor = v8::Local<v8::Function>::Cast(globalObj->Get(Nan::New("Buffer").ToLocalChecked()));
-  v8::Handle<v8::Value> constructorArgs[3] = { slowBuffer, Nan::New<v8::Integer>((int32_t) valueLen), Nan::New<v8::Integer>(0) };
-  v8::Local<v8::Object> actualBuffer = bufferConstructor->NewInstance(3, constructorArgs);
+  v8::Local<v8::Value> constructorArgs[3] = { slowBuffer, Nan::New<v8::Integer>((int32_t) valueLen), Nan::New<v8::Integer>(0) };
+  v8::Local<v8::Object> actualBuffer = Nan::NewInstance(bufferConstructor, 3, constructorArgs).ToLocalChecked();
 
   info.GetReturnValue().Set(actualBuffer);
 }
