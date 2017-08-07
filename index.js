@@ -1,4 +1,5 @@
 var addon = require('./build/Release/xattr')
+var bufferFrom = require('buffer-from')
 
 function defaultCallback (err) {
   if (err) throw err
@@ -13,7 +14,7 @@ function validateArgument (key, val) {
       if (typeof val === 'string') return val
       throw new TypeError('`attr` must be a string')
     case 'value':
-      if (typeof val === 'string') return new Buffer(val)
+      if (typeof val === 'string') return bufferFrom(val)
       if (Buffer.isBuffer(val)) return val
       throw new TypeError('`value` must be a string or buffer')
     case 'cb':

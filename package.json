@@ -7,7 +7,7 @@
   "devDependencies": {
     "fs-temp": "^1.0.0",
     "mocha": "^2.2.5",
-    "standard": "^7.0.0"
+    "standard": "^10.0.3"
   },
   "scripts": {
     "test": "standard && mocha",
@@ -18,6 +18,7 @@
     "url": "http://github.com/LinusU/fs-xattr.git"
   },
   "dependencies": {
+    "buffer-from": "^0.1.1",
     "nan": "^2.3.2"
   }
 }
