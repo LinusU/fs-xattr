@@ -20,5 +20,8 @@
   "dependencies": {
     "buffer-from": "^0.1.1",
     "nan": "^2.3.2"
-  }
+  },
+  "os": [
+    "!win32"
+  ]
 }
