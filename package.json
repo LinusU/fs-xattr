@@ -3,23 +3,22 @@
   "version": "0.1.17",
   "license": "MIT",
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
-  "main": "index.js",
-  "devDependencies": {
-    "fs-temp": "^1.0.0",
-    "mocha": "^2.2.5",
-    "standard": "^10.0.3"
-  },
+  "repository": "LinusU/fs-xattr",
   "scripts": {
     "test": "standard && mocha",
     "lint": "standard"
   },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/LinusU/fs-xattr.git"
-  },
   "dependencies": {
     "buffer-from": "^0.1.1",
     "nan": "^2.3.2"
+  },
+  "devDependencies": {
+    "fs-temp": "^1.1.2",
+    "mocha": "^3.5.0",
+    "standard": "^10.0.3"
+  },
+  "engines": {
+    "node": ">=0.10"
   },
   "os": [
     "!win32"
