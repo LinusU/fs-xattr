@@ -1,19 +1,21 @@
 /* eslint-env mocha */
 
-var xattr = require('../')
+'use strict'
 
-var fs = require('fs')
-var temp = require('fs-temp')
-var assert = require('assert')
-var crypto = require('crypto')
+const xattr = require('../')
 
-var attribute0 = 'com.linusu.test'
-var attribute1 = 'com.linusu.secondary'
-var payload0 = crypto.randomBytes(24).toString('hex')
-var payload1 = crypto.randomBytes(24).toString('hex')
+const fs = require('fs')
+const temp = require('fs-temp')
+const assert = require('assert')
+const crypto = require('crypto')
+
+const attribute0 = 'com.linusu.test'
+const attribute1 = 'com.linusu.secondary'
+const payload0 = crypto.randomBytes(24).toString('hex')
+const payload1 = crypto.randomBytes(24).toString('hex')
 
 describe('xattr#sync', function () {
-  var path
+  let path
 
   before(function () {
     path = temp.writeFileSync('')
@@ -25,13 +27,13 @@ describe('xattr#sync', function () {
   })
 
   it('should get an attribute', function () {
-    var val = xattr.getSync(path, attribute0)
+    const val = xattr.getSync(path, attribute0)
     assert(Buffer.isBuffer(val))
     assert.equal(val, payload0)
   })
 
   it('should list the attributes', function () {
-    var val = xattr.listSync(path)
+    const val = xattr.listSync(path)
     assert.ok(~val.indexOf(attribute0))
     assert.ok(~val.indexOf(attribute1))
   })
@@ -57,7 +59,7 @@ describe('xattr#sync', function () {
 })
 
 describe('xattr#async', function () {
-  var path
+  let path
 
   before(function () {
     path = temp.writeFileSync('')
@@ -111,7 +113,7 @@ describe('xattr#async', function () {
 })
 
 describe('xattr#utf8', function () {
-  var path
+  let path
 
   before(function () {
     path = temp.template('∞ %s').writeFileSync('')

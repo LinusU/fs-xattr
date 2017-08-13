@@ -18,7 +18,7 @@ npm install --save fs-xattr
 ## Usage
 
 ```javascript
-var xattr = require('fs-xattr')
+const xattr = require('fs-xattr')
 ```
 
 ## API

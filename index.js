@@ -1,5 +1,7 @@
-var addon = require('./build/Release/xattr')
-var bufferFrom = require('buffer-from')
+'use strict'
+
+const addon = require('./build/Release/xattr')
+const bufferFrom = require('buffer-from')
 
 function defaultCallback (err) {
   if (err) throw err
@@ -22,7 +24,7 @@ function validateArgument (key, val) {
       if (val == null) return defaultCallback
       throw new TypeError('`cb` must be a function')
     default:
-      throw new Error('Unknown argument: ' + key)
+      throw new Error(`Unknown argument: ${key}`)
   }
 }
 
