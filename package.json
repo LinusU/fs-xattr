@@ -1,6 +1,6 @@
 {
   "name": "fs-xattr",
-  "version": "0.1.17",
+  "version": "0.2.0",
   "license": "MIT",
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "repository": "LinusU/fs-xattr",
