@@ -11,7 +11,7 @@
 
 class XattrWorker : public Nan::AsyncWorker {
 public:
-  XattrWorker(Nan::Callback* cb) : Nan::AsyncWorker(cb), errorNumber(0) {}
+  XattrWorker(Nan::Callback* cb, const char* resource_name) : Nan::AsyncWorker(cb, resource_name), errorNumber(0) {}
 
   virtual void WorkComplete() {
     Nan::HandleScope scope;
@@ -32,7 +32,7 @@ protected:
       MakeXattrError(this->errorNumber)
     };
 
-    callback->Call(1, argv);
+    callback->Call(1, argv, async_resource);
   }
 
   void SetErrorNumber(const int errorNumber) {
@@ -45,7 +45,7 @@ private:
 
 class SetWorker : public XattrWorker {
 public:
-  SetWorker(v8::Local<v8::Value> filename, v8::Local<v8::Value> attribute, v8::Local<v8::Value> value, Nan::Callback* cb) : XattrWorker(cb) {
+  SetWorker(v8::Local<v8::Value> filename, v8::Local<v8::Value> attribute, v8::Local<v8::Value> value, Nan::Callback* cb) : XattrWorker(cb, "fs-xattr:SetWorker") {
     Nan::Utf8String aFilename(filename);
     Nan::Utf8String aAttribute(attribute);
 
@@ -80,7 +80,7 @@ private:
 
 class GetWorker : public XattrWorker {
 public:
-  GetWorker(v8::Local<v8::Value> filename, v8::Local<v8::Value> attribute, Nan::Callback* cb) : XattrWorker(cb) {
+  GetWorker(v8::Local<v8::Value> filename, v8::Local<v8::Value> attribute, Nan::Callback* cb) : XattrWorker(cb, "fs-xattr:GetWorker") {
     Nan::Utf8String aFilename(filename);
     Nan::Utf8String aAttribute(attribute);
 
@@ -126,7 +126,7 @@ protected:
     v8::Local<v8::Object> data = Nan::NewBuffer(resultData, resultLength).ToLocalChecked();
     v8::Local<v8::Value> argv[] = { Nan::Null(), data };
 
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
   }
 
 private:
@@ -138,7 +138,7 @@ private:
 
 class ListWorker : public XattrWorker {
 public:
-  ListWorker(v8::Local<v8::Value> filename, Nan::Callback* cb) : XattrWorker(cb) {
+  ListWorker(v8::Local<v8::Value> filename, Nan::Callback* cb) : XattrWorker(cb, "fs-xattr:ListWorker") {
     Nan::Utf8String aFilename(filename);
 
     this->filename = new std::string(*aFilename, aFilename.length());
@@ -183,7 +183,7 @@ protected:
 
     free(resultData);
 
-    callback->Call(2, argv);
+    callback->Call(2, argv, async_resource);
   }
 
 private:
@@ -194,7 +194,7 @@ private:
 
 class RemoveWorker : public XattrWorker {
 public:
-  RemoveWorker(v8::Local<v8::Value> filename, v8::Local<v8::Value> attribute, Nan::Callback* cb) : XattrWorker(cb) {
+  RemoveWorker(v8::Local<v8::Value> filename, v8::Local<v8::Value> attribute, Nan::Callback* cb) : XattrWorker(cb, "fs-xattr:RemoveWorker") {
     Nan::Utf8String aFilename(filename);
     Nan::Utf8String aAttribute(attribute);
 

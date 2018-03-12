@@ -9,13 +9,13 @@
     "lint": "standard"
   },
   "dependencies": {
-    "buffer-from": "^0.1.1",
-    "nan": "^2.3.2"
+    "buffer-from": "^1.0.0",
+    "nan": "^2.9.2"
   },
   "devDependencies": {
     "fs-temp": "^1.1.2",
-    "mocha": "^3.5.0",
-    "standard": "^10.0.3"
+    "mocha": "^5.0.4",
+    "standard": "^11.0.0"
   },
   "engines": {
     "node": ">=4"
