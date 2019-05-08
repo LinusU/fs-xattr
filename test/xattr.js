@@ -29,7 +29,7 @@ describe('xattr#sync', function () {
   it('should get an attribute', function () {
     const val = xattr.getSync(path, attribute0)
     assert(Buffer.isBuffer(val))
-    assert.equal(val, payload0)
+    assert.strictEqual(val.toString(), payload0)
   })
 
   it('should list the attributes', function () {
@@ -47,8 +47,8 @@ describe('xattr#sync', function () {
     assert.throws(function () {
       xattr.getSync(path, attribute0)
     }, function (err) {
-      assert.equal(err.errno, 93)
-      assert.equal(err.code, 'ENOATTR')
+      assert.strictEqual(err.errno, 93)
+      assert.strictEqual(err.code, 'ENOATTR')
       return true
     })
   })
@@ -76,7 +76,7 @@ describe('xattr#async', function () {
     xattr.get(path, attribute0, function (err, val) {
       assert.ifError(err)
       assert(Buffer.isBuffer(val))
-      assert.equal(val, payload0)
+      assert.strictEqual(val.toString(), payload0)
       done()
     })
   })
@@ -100,9 +100,9 @@ describe('xattr#async', function () {
   it('should give useful errors', function (done) {
     xattr.get(path, attribute0, function (err, val) {
       assert(err)
-      assert.equal(err.errno, 93)
-      assert.equal(err.code, 'ENOATTR')
-      assert.equal(val, undefined)
+      assert.strictEqual(err.errno, 93)
+      assert.strictEqual(err.code, 'ENOATTR')
+      assert.strictEqual(val, undefined)
       done()
     })
   })
@@ -127,7 +127,7 @@ describe('xattr#utf8', function () {
     xattr.get(path, attribute0, function (err, val) {
       assert.ifError(err)
       assert(Buffer.isBuffer(val))
-      assert.equal(val, payload0)
+      assert.strictEqual(val.toString(), payload0)
       done()
     })
   })
@@ -147,9 +147,9 @@ describe('xattr#utf8', function () {
   it('should give useful errors', function (done) {
     xattr.get(path, attribute0, function (err, val) {
       assert(err)
-      assert.equal(err.errno, 93)
-      assert.equal(err.code, 'ENOATTR')
-      assert.equal(val, undefined)
+      assert.strictEqual(err.errno, 93)
+      assert.strictEqual(err.code, 'ENOATTR')
+      assert.strictEqual(val, undefined)
       done()
     })
   })
