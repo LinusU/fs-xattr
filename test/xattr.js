@@ -34,8 +34,8 @@ describe('xattr#sync', function () {
 
   it('should list the attributes', function () {
     const val = xattr.listSync(path)
-    assert.ok(~val.indexOf(attribute0))
-    assert.ok(~val.indexOf(attribute1))
+    assert.ok(val.includes(attribute0))
+    assert.ok(val.includes(attribute1))
   })
 
   it('should remove the attribute', function () {
@@ -65,46 +65,41 @@ describe('xattr#async', function () {
     path = temp.writeFileSync('')
   })
 
-  it('should set an attribute', function (done) {
-    xattr.set(path, attribute0, payload0, function (err) {
-      assert.ifError(err)
-      xattr.set(path, attribute1, payload1, done)
-    })
+  it('should set an attribute', async function () {
+    await xattr.set(path, attribute0, payload0)
+    await xattr.set(path, attribute1, payload1)
   })
 
-  it('should get an attribute', function (done) {
-    xattr.get(path, attribute0, function (err, val) {
-      assert.ifError(err)
-      assert(Buffer.isBuffer(val))
-      assert.strictEqual(val.toString(), payload0)
-      done()
-    })
+  it('should get an attribute', async function () {
+    const val = await xattr.get(path, attribute0)
+
+    assert(Buffer.isBuffer(val))
+    assert.strictEqual(val.toString(), payload0)
   })
 
-  it('should list the attributes', function (done) {
-    xattr.list(path, function (err, list) {
-      assert.ifError(err)
-      assert.ok(~list.indexOf(attribute0))
-      assert.ok(~list.indexOf(attribute1))
-      done()
-    })
+  it('should list the attributes', async function () {
+    const list = await xattr.list(path)
+
+    assert.ok(list.includes(attribute0))
+    assert.ok(list.includes(attribute1))
   })
 
-  it('should remove the attribute', function (done) {
-    xattr.remove(path, attribute0, function (err) {
-      assert.ifError(err)
-      xattr.remove(path, attribute1, done)
-    })
+  it('should remove the attribute', async function () {
+    await xattr.remove(path, attribute0)
+    await xattr.remove(path, attribute1)
   })
 
-  it('should give useful errors', function (done) {
-    xattr.get(path, attribute0, function (err, val) {
-      assert(err)
-      assert.strictEqual(err.errno, 93)
-      assert.strictEqual(err.code, 'ENOATTR')
-      assert.strictEqual(val, undefined)
-      done()
-    })
+  it('should give useful errors', async function () {
+    let err
+    try {
+      await xattr.get(path, attribute0)
+    } catch (_err) {
+      err = _err
+    }
+
+    assert(err)
+    assert.strictEqual(err.errno, 93)
+    assert.strictEqual(err.code, 'ENOATTR')
   })
 
   after(function (done) {
@@ -119,39 +114,38 @@ describe('xattr#utf8', function () {
     path = temp.template('∞ %s').writeFileSync('')
   })
 
-  it('should set an attribute', function (done) {
-    xattr.set(path, attribute0, payload0, done)
+  it('should set an attribute', async function () {
+    await xattr.set(path, attribute0, payload0)
   })
 
-  it('should get an attribute', function (done) {
-    xattr.get(path, attribute0, function (err, val) {
-      assert.ifError(err)
-      assert(Buffer.isBuffer(val))
-      assert.strictEqual(val.toString(), payload0)
-      done()
-    })
+  it('should get an attribute', async function () {
+    const val = await xattr.get(path, attribute0)
+
+    assert(Buffer.isBuffer(val))
+    assert.strictEqual(val.toString(), payload0)
   })
 
-  it('should list the attributes', function (done) {
-    xattr.list(path, function (err, list) {
-      assert.ifError(err)
-      assert.ok(~list.indexOf(attribute0))
-      done()
-    })
+  it('should list the attributes', async function () {
+    const list = await xattr.list(path)
+
+    assert.ok(list.includes(attribute0))
   })
 
-  it('should remove the attribute', function (done) {
-    xattr.remove(path, attribute0, done)
+  it('should remove the attribute', async function () {
+    await xattr.remove(path, attribute0)
   })
 
-  it('should give useful errors', function (done) {
-    xattr.get(path, attribute0, function (err, val) {
-      assert(err)
-      assert.strictEqual(err.errno, 93)
-      assert.strictEqual(err.code, 'ENOATTR')
-      assert.strictEqual(val, undefined)
-      done()
-    })
+  it('should give useful errors', async function () {
+    let err
+    try {
+      await xattr.get(path, attribute0)
+    } catch (_err) {
+      err = _err
+    }
+
+    assert(err)
+    assert.strictEqual(err.errno, 93)
+    assert.strictEqual(err.code, 'ENOATTR')
   })
 
   after(function (done) {

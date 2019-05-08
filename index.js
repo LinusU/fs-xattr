@@ -2,10 +2,6 @@
 
 const addon = require('./build/Release/xattr')
 
-function defaultCallback (err) {
-  if (err) throw err
-}
-
 function validateArgument (key, val) {
   switch (key) {
     case 'path':
@@ -18,10 +14,6 @@ function validateArgument (key, val) {
       if (typeof val === 'string') return Buffer.from(val)
       if (Buffer.isBuffer(val)) return val
       throw new TypeError('`value` must be a string or buffer')
-    case 'cb':
-      if (typeof val === 'function') return val
-      if (val == null) return defaultCallback
-      throw new TypeError('`cb` must be a function')
     default:
       throw new Error(`Unknown argument: ${key}`)
   }
@@ -29,36 +21,32 @@ function validateArgument (key, val) {
 
 /* Async methods */
 
-exports.get = function get (path, attr, cb) {
+exports.get = function get (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
-  cb = validateArgument('cb', cb)
 
-  addon.get(path, attr, cb)
+  return new Promise((resolve, reject) => addon.get(path, attr, (err, result) => err ? reject(err) : resolve(result)))
 }
 
-exports.set = function set (path, attr, value, cb) {
+exports.set = function set (path, attr, value) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
   value = validateArgument('value', value)
-  cb = validateArgument('cb', cb)
 
-  addon.set(path, attr, value, cb)
+  return new Promise((resolve, reject) => addon.set(path, attr, value, (err) => err ? reject(err) : resolve()))
 }
 
-exports.list = function list (path, cb) {
+exports.list = function list (path) {
   path = validateArgument('path', path)
-  cb = validateArgument('cb', cb)
 
-  addon.list(path, cb)
+  return new Promise((resolve, reject) => addon.list(path, (err, result) => err ? reject(err) : resolve(result)))
 }
 
-exports.remove = function remove (path, attr, cb) {
+exports.remove = function remove (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
-  cb = validateArgument('cb', cb)
 
-  addon.remove(path, attr, cb)
+  return new Promise((resolve, reject) => addon.remove(path, attr, (err) => err ? reject(err) : resolve()))
 }
 
 /* Sync methods */

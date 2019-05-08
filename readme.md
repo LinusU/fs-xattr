@@ -19,47 +19,52 @@ npm install --save fs-xattr
 
 ```javascript
 const xattr = require('fs-xattr')
+
+await xattr.set('index.js', 'com.linusu.test', 'Hello, World!')
+
+console.log(await xattr.get('index.js', 'com.linusu.test'))
+//=> Hello, World!
 ```
 
 ## API
 
-### xattr.get(path, attr, cb)
+### xattr.get(path, attr)
 
 Get extended attribute `attr` from file at `path`.
 
-`cb` is a callback that will be called with `(err, val)`.
+Returns a `Promise` that will resolve with the value of the attribute.
 
 ### xattr.getSync(path, attr)
 
 Synchronous version of `xattr.get`
 
-### xattr.set(path, attr, value, cb)
+### xattr.set(path, attr, value)
 
 Set extended attribute `attr` to `value` on file at `path`.
 
 `value` can be either a string or a `Buffer`.
 
-`cb` is a callback that will be called with `(err)`.
+Returns a `Promise` that will resolve when the value has been set.
 
 ### xattr.setSync(path, attr, value)
 
 Synchronous version of `xattr.set`
 
-### xattr.remove(path, attr, cb)
+### xattr.remove(path, attr)
 
 Remove extended attribute `attr` on file at `path`.
 
-`cb` is a callback that will be called with `(err)`.
+Returns a `Promise` that will resolve when the value has been removed.
 
 ### xattr.removeSync(path, attr)
 
 Synchronous version of `xattr.remove`
 
-### xattr.list(path, cb)
+### xattr.list(path)
 
 List all attributes on file at `path`.
 
-`cb` is a callback that will get called with `(err, list)`. `list` in an array of strings, e.g. `['com.linusu.test', 'com.apple.FinderInfo']`.
+Returns a `Promise` that will resolve with an array of strings, e.g. `['com.linusu.test', 'com.apple.FinderInfo']`.
 
 ### xattr.listSync(path)
 
