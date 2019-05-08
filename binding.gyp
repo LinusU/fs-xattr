@@ -3,14 +3,11 @@
     {
       "target_name": "xattr",
       "sources": [
-        "src/async.cc",
-        "src/error.cc",
-        "src/sync.cc",
-        "src/util.cc",
-        "src/xattr.cc"
-      ],
-      "include_dirs" : [
-        "<!(node -e \"require('nan')\")"
+        "src/async.c",
+        "src/error.c",
+        "src/sync.c",
+        "src/util.c",
+        "src/xattr.c"
       ]
     }
   ]

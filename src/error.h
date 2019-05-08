@@ -1,9 +1,10 @@
 #ifndef LD_ERROR_H
 #define LD_ERROR_H
 
-#include <v8.h>
+#define NAPI_VERSION 1
+#include <node_api.h>
 
-v8::Local<v8::Value> MakeXattrError(int e);
-void ThrowExceptionErrno(int e);
+napi_status create_xattr_error(napi_env env, int e, napi_value* result);
+napi_status throw_xattr_error(napi_env env, int e);
 
 #endif

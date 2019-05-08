@@ -25,7 +25,7 @@ exports.get = function get (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
-  return new Promise((resolve, reject) => addon.get(path, attr, (err, result) => err ? reject(err) : resolve(result)))
+  return addon.get(path, attr)
 }
 
 exports.set = function set (path, attr, value) {
@@ -33,20 +33,20 @@ exports.set = function set (path, attr, value) {
   attr = validateArgument('attr', attr)
   value = validateArgument('value', value)
 
-  return new Promise((resolve, reject) => addon.set(path, attr, value, (err) => err ? reject(err) : resolve()))
+  return addon.set(path, attr, value)
 }
 
 exports.list = function list (path) {
   path = validateArgument('path', path)
 
-  return new Promise((resolve, reject) => addon.list(path, (err, result) => err ? reject(err) : resolve(result)))
+  return addon.list(path)
 }
 
 exports.remove = function remove (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
-  return new Promise((resolve, reject) => addon.remove(path, attr, (err) => err ? reject(err) : resolve()))
+  return addon.remove(path, attr)
 }
 
 /* Sync methods */
