@@ -2,8 +2,12 @@
   "name": "fs-xattr",
   "version": "0.2.1",
   "license": "MIT",
-  "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "repository": "LinusU/fs-xattr",
+  "files": [
+    "binding.gyp",
+    "index.js",
+    "src/"
+  ],
   "scripts": {
     "test": "standard && mocha",
     "lint": "standard"
