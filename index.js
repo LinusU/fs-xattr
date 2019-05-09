@@ -1,11 +1,6 @@
 'use strict'
 
 const addon = require('./build/Release/xattr')
-const bufferFrom = require('buffer-from')
-
-function defaultCallback (err) {
-  if (err) throw err
-}
 
 function validateArgument (key, val) {
   switch (key) {
@@ -16,13 +11,9 @@ function validateArgument (key, val) {
       if (typeof val === 'string') return val
       throw new TypeError('`attr` must be a string')
     case 'value':
-      if (typeof val === 'string') return bufferFrom(val)
+      if (typeof val === 'string') return Buffer.from(val)
       if (Buffer.isBuffer(val)) return val
       throw new TypeError('`value` must be a string or buffer')
-    case 'cb':
-      if (typeof val === 'function') return val
-      if (val == null) return defaultCallback
-      throw new TypeError('`cb` must be a function')
     default:
       throw new Error(`Unknown argument: ${key}`)
   }
@@ -30,36 +21,32 @@ function validateArgument (key, val) {
 
 /* Async methods */
 
-exports.get = function get (path, attr, cb) {
+exports.get = function get (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
-  cb = validateArgument('cb', cb)
 
-  addon.get(path, attr, cb)
+  return addon.get(path, attr)
 }
 
-exports.set = function set (path, attr, value, cb) {
+exports.set = function set (path, attr, value) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
   value = validateArgument('value', value)
-  cb = validateArgument('cb', cb)
 
-  addon.set(path, attr, value, cb)
+  return addon.set(path, attr, value)
 }
 
-exports.list = function list (path, cb) {
+exports.list = function list (path) {
   path = validateArgument('path', path)
-  cb = validateArgument('cb', cb)
 
-  addon.list(path, cb)
+  return addon.list(path)
 }
 
-exports.remove = function remove (path, attr, cb) {
+exports.remove = function remove (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
-  cb = validateArgument('cb', cb)
 
-  addon.remove(path, attr, cb)
+  return addon.remove(path, attr)
 }
 
 /* Sync methods */

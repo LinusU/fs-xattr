@@ -1,9 +1,7 @@
-
-#include <node.h>
-#include <nan.h>
-
 #include <errno.h>
 #include <string.h>
+
+#include "error.h"
 
 #ifdef __APPLE__
 #define E_ENOATTR ENOATTR
@@ -13,11 +11,7 @@
 #define S_ENOATTR "ENODATA"
 #endif
 
-using v8::Local;
-using v8::Object;
-using v8::Integer;
-
-const char* errorDescriptionForGet(int e) {
+const char* _error_description(int e) {
   switch (e) {
     case E_ENOATTR: return "The extended attribute does not exist.";
     case ENOTSUP: return "The file system does not support extended attributes or has the feature disabled.";
@@ -56,7 +50,7 @@ const char* errorDescriptionForSet(int e) {
   }
 }
 
-const char* errorCode(int e) {
+const char* _error_code(int e) {
   switch (e) {
     /* Standard */
     case EPERM: return "EPERM";
@@ -103,17 +97,40 @@ const char* errorCode(int e) {
   }
 }
 
-v8::Local<v8::Value> MakeXattrError(int e) {
-  Nan::EscapableHandleScope scope;
+napi_status create_xattr_error(napi_env env, int e, napi_value* result) {
+  napi_status status;
 
-  v8::Local<v8::Object> err = Nan::Error(errorDescriptionForGet(e))->ToObject();
+  napi_value code;
+  status = napi_create_string_utf8(env, _error_code(e), NAPI_AUTO_LENGTH, &code);
+  if (status != napi_ok) return status;
 
-  Nan::Set(err, Nan::New("errno").ToLocalChecked(), Nan::New<Integer>(e));
-  Nan::Set(err, Nan::New("code").ToLocalChecked(), Nan::New(errorCode(e)).ToLocalChecked());
+  napi_value msg;
+  status = napi_create_string_utf8(env, _error_description(e), NAPI_AUTO_LENGTH, &msg);
 
-  return scope.Escape(err);
+  napi_value error;
+  status = napi_create_error(env, code, msg, &error);
+  if (status != napi_ok) return status;
+
+  napi_value error_number;
+  status = napi_create_int32(env, e, &error_number);
+  if (status != napi_ok) return status;
+
+  status = napi_set_named_property(env, error, "errno", error_number);
+  if (status != napi_ok) return status;
+
+  *result = error;
+  return napi_ok;
 }
 
-void ThrowExceptionErrno(int e) {
-  Nan::ThrowError(MakeXattrError(e));
+napi_status throw_xattr_error(napi_env env, int e) {
+  napi_status status;
+
+  napi_value error;
+  status = create_xattr_error(env, e, &error);
+  if (status != napi_ok) return status;
+
+  status = napi_throw(env, error);
+  if (status != napi_ok) return status;
+
+  return napi_ok;
 }

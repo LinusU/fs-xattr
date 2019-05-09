@@ -8,17 +8,13 @@
     "test": "standard && mocha",
     "lint": "standard"
   },
-  "dependencies": {
-    "buffer-from": "^1.0.0",
-    "nan": "^2.9.2"
-  },
   "devDependencies": {
     "fs-temp": "^1.1.2",
-    "mocha": "^5.0.4",
-    "standard": "^11.0.0"
+    "mocha": "^6.1.4",
+    "standard": "^12.0.1"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8.6.0"
   },
   "os": [
     "!win32"
