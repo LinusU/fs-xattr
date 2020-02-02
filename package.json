@@ -5,6 +5,7 @@
   "repository": "LinusU/fs-xattr",
   "files": [
     "binding.gyp",
+    "index.d.ts",
     "index.js",
     "src/"
   ],
