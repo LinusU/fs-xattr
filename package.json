@@ -6,6 +6,7 @@
   "files": [
     "binding.gyp",
     "index.js",
+    "index.d.ts",
     "src/"
   ],
   "scripts": {
@@ -13,6 +14,7 @@
     "lint": "standard"
   },
   "devDependencies": {
+    "@types/node": "^13.7.0",
     "fs-temp": "^1.1.2",
     "mocha": "^6.2.2",
     "standard": "^14.3.1"
@@ -22,5 +24,6 @@
   },
   "os": [
     "!win32"
-  ]
+  ],
+  "types": "index.d.ts"
 }
