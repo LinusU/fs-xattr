@@ -1,11 +1,7 @@
 #include <assert.h>
-#include <errno.h>
 #include <stdlib.h>
-#include <sys/xattr.h>
-
 #include "error.h"
 #include "util.h"
-
 #include "async.h"
 
 typedef struct {
@@ -20,10 +16,12 @@ typedef struct {
 void xattr_get_execute(napi_env env, void* _data) {
   XattrGetData* data = _data;
 
-#ifdef __APPLE__
-  data->value_length = getxattr(data->filename, data->attribute, NULL, 0, 0, 0);
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    data->value_length = extattr_get_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute, NULL, 0);
+#elif __APPLE__
+    data->value_length = getxattr(data->filename, data->attribute, NULL, 0, 0, 0);
 #else
-  data->value_length = getxattr(data->filename, data->attribute, NULL, 0);
+    data->value_length = getxattr(data->filename, data->attribute, NULL, 0);
 #endif
 
   if (data->value_length == -1) {
@@ -33,10 +31,12 @@ void xattr_get_execute(napi_env env, void* _data) {
 
   data->value = malloc((size_t) data->value_length);
 
-#ifdef __APPLE__
-  data->value_length = getxattr(data->filename, data->attribute, data->value, (size_t) data->value_length, 0, 0);
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    data->value_length = extattr_get_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute, data->value, data->value_length);
+#elif __APPLE__
+    data->value_length = getxattr(data->filename, data->attribute, data->value, (size_t) data->value_length, 0, 0);
 #else
-  data->value_length = getxattr(data->filename, data->attribute, data->value, (size_t) data->value_length);
+    data->value_length = getxattr(data->filename, data->attribute, data->value, (size_t) data->value_length);
 #endif
 
   if (data->value_length == -1) {
@@ -72,12 +72,12 @@ napi_value xattr_get(napi_env env, napi_callback_info info) {
 
   XattrGetData* data = malloc(sizeof(XattrGetData));
 
-  size_t filename_length;
+  size_t filename_length = 0;
   assert(napi_get_value_string_utf8(env, args[0], NULL, 0, &filename_length) == napi_ok);
   data->filename = malloc(filename_length + 1);
   assert(napi_get_value_string_utf8(env, args[0], data->filename, filename_length + 1, NULL) == napi_ok);
 
-  size_t attribute_length;
+  size_t attribute_length = 0;
   assert(napi_get_value_string_utf8(env, args[1], NULL, 0, &attribute_length) == napi_ok);
   data->attribute = malloc(attribute_length + 1);
   assert(napi_get_value_string_utf8(env, args[1], data->attribute, attribute_length + 1, NULL) == napi_ok);
@@ -106,12 +106,14 @@ typedef struct {
 } XattrSetData;
 
 void xattr_set_execute(napi_env env, void* _data) {
-  XattrSetData* data = _data;
-
-#ifdef __APPLE__
-  int res = setxattr(data->filename, data->attribute, data->value, data->value_length, 0, 0);
+    XattrSetData* data = _data;
+    int res = 0;
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    res = extattr_set_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute, data->value, (size_t)data->value_length);
+#elif __APPLE__
+    res = setxattr(data->filename, data->attribute, data->value, data->value_length, 0, 0);
 #else
-  int res = setxattr(data->filename, data->attribute, data->value, data->value_length, 0);
+    res = setxattr(data->filename, data->attribute, data->value, data->value_length, 0);
 #endif
 
   if (res == -1) {
@@ -185,10 +187,12 @@ typedef struct {
 void xattr_list_execute(napi_env env, void* _data) {
   XattrListData* data = _data;
 
-#ifdef __APPLE__
-  data->result_length = listxattr(data->filename, NULL, 0, 0);
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    data->result_length = extattr_list_file(data->filename, EXTATTR_NAMESPACE_USER, data->result, (size_t)data->result_length);
+#elif __APPLE__
+    data->result_length = listxattr(data->filename, NULL, 0, 0);
 #else
-  data->result_length = listxattr(data->filename, NULL, 0);
+    data->result_length = listxattr(data->filename, NULL, 0);
 #endif
 
   if (data->result_length == -1) {
@@ -198,10 +202,12 @@ void xattr_list_execute(napi_env env, void* _data) {
 
   data->result = (char *) malloc((size_t) data->result_length);
 
-#ifdef __APPLE__
-  data->result_length = listxattr(data->filename, data->result, (size_t) data->result_length, 0);
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    data->result_length = extattr_list_file(data->filename, EXTATTR_NAMESPACE_USER, data->result, (size_t) data->result_length);
+#elif __APPLE__
+    data->result_length = listxattr(data->filename, data->result, (size_t) data->result_length, 0);
 #else
-  data->result_length = listxattr(data->filename, data->result, (size_t) data->result_length);
+    data->result_length = listxattr(data->filename, data->result, (size_t) data->result_length);
 #endif
 
   if (data->result_length == -1) {
@@ -237,7 +243,7 @@ napi_value xattr_list(napi_env env, napi_callback_info info) {
 
   XattrListData* data = malloc(sizeof(XattrListData));
 
-  size_t filename_length;
+  size_t filename_length = 0;
   assert(napi_get_value_string_utf8(env, args[0], NULL, 0, &filename_length) == napi_ok);
   data->filename = malloc(filename_length + 1);
   assert(napi_get_value_string_utf8(env, args[0], data->filename, filename_length + 1, NULL) == napi_ok);
@@ -266,10 +272,12 @@ typedef struct {
 void xattr_remove_execute(napi_env env, void* _data) {
   XattrRemoveData* data = _data;
 
-#ifdef __APPLE__
-  int res = removexattr(data->filename, data->attribute, 0);
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    int res = extattr_delete_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute);
+#elif __APPLE__
+    int res = removexattr(data->filename, data->attribute, 0);
 #else
-  int res = removexattr(data->filename, data->attribute);
+    int res = removexattr(data->filename, data->attribute);
 #endif
 
   if (res == -1) {
@@ -306,12 +314,12 @@ napi_value xattr_remove(napi_env env, napi_callback_info info) {
 
   XattrRemoveData* data = malloc(sizeof(XattrRemoveData));
 
-  size_t filename_length;
+  size_t filename_length = 0;
   assert(napi_get_value_string_utf8(env, args[0], NULL, 0, &filename_length) == napi_ok);
   data->filename = malloc(filename_length + 1);
   assert(napi_get_value_string_utf8(env, args[0], data->filename, filename_length + 1, NULL) == napi_ok);
 
-  size_t attribute_length;
+  size_t attribute_length = 0;
   assert(napi_get_value_string_utf8(env, args[1], NULL, 0, &attribute_length) == napi_ok);
   data->attribute = malloc(attribute_length + 1);
   assert(napi_get_value_string_utf8(env, args[1], data->attribute, attribute_length + 1, NULL) == napi_ok);

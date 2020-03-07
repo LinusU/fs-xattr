@@ -3,7 +3,7 @@
 
 #include "error.h"
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
 #define E_ENOATTR ENOATTR
 #define S_ENOATTR "ENOATTR"
 #else

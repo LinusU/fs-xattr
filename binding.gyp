@@ -8,7 +8,10 @@
         "src/sync.c",
         "src/util.c",
         "src/xattr.c"
-      ]
+      ],
+      "cxxflags": [
+        "-std=c++17"
+      ]  
     }
   ]
 }
