@@ -24,6 +24,7 @@ napi_value xattr_get_sync(napi_env env, napi_callback_info info) {
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
     value_length = extattr_get_file(filename, EXTATTR_NAMESPACE_USER, attribute, NULL, 0);
+    printf("async.c: %s : value_length: %zd \n", __func__, value_length);
 #elif __APPLE__
     value_length = getxattr(filename, attribute, NULL, 0, 0, 0);
 #else
@@ -42,7 +43,8 @@ napi_value xattr_get_sync(napi_env env, napi_callback_info info) {
   assert(napi_create_buffer(env, (size_t) value_length, &buffer_data, &buffer) == napi_ok);
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
-    value_length = extattr_get_file(filename, EXTATTR_NAMESPACE_USER, attribute, buffer_data, value_length);
+    value_length = extattr_get_file(filename, EXTATTR_NAMESPACE_USER, attribute, buffer_data, (size_t)value_length);
+    printf("async.c: %s : value_length: %zd \n", __func__, value_length);
 #elif __APPLE__
     value_length = getxattr(filename, attribute, buffer_data, (size_t)value_length, 0, 0);
 #else
@@ -80,11 +82,11 @@ napi_value xattr_set_sync(napi_env env, napi_callback_info info) {
   assert(napi_get_buffer_info(env, args[2], &value, &value_length) == napi_ok);
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
-    int res = extattr_set_file(filename, EXTATTR_NAMESPACE_USER, attribute, value, value_length);
+    ssize_t res = extattr_set_file(filename, EXTATTR_NAMESPACE_USER, attribute, value, value_length);
 #elif __APPLE__
-    int res = setxattr(filename, attribute, value, value_length, 0, 0);
+    ssize_t res = setxattr(filename, attribute, value, value_length, 0, 0);
 #else
-    int res = setxattr(filename, attribute, value, value_length, 0);
+    ssize_t res = setxattr(filename, attribute, value, value_length, 0);
 #endif
 
   free(filename);
@@ -112,9 +114,9 @@ napi_value xattr_list_sync(napi_env env, napi_callback_info info) {
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
 
-    printf("file name: %s \n", filename);
+    printf("async.c: %s : data->attribute: %s \n", __func__, filename);
     result_length = extattr_list_file(filename, EXTATTR_NAMESPACE_USER, NULL, 0);
-    printf("file name: %zd \n", result_length);
+    printf("async.c: %s : data->attribute: %zd \n", __func__, result_length);
 #elif __APPLE__
     result_length = listxattr(filename, NULL, 0, 0);
 #else
