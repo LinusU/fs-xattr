@@ -9,7 +9,7 @@ typedef struct {
   char* filename;
   char* attribute;
   napi_deferred deferred;
-  int e;
+  int error;
   ssize_t value_length;
   char* value;
 } XattrGetData;
@@ -17,9 +17,8 @@ typedef struct {
 void xattr_get_execute(napi_env env, void* _data) {
   XattrGetData* data = _data;
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
     data->value_length = extattr_get_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute, NULL, 0);
-    printf("async.c: %s : data->value_length: %zd \n", __func__, data->value_length);
 #elif __APPLE__
     data->value_length = getxattr(data->filename, data->attribute, NULL, 0, 0, 0);
 #else
@@ -27,16 +26,15 @@ void xattr_get_execute(napi_env env, void* _data) {
 #endif
 
   if (data->value_length == -1) {
-    data->e = errno;
+    data->error = errno;
     return ;
   }
 
   data->value = malloc((size_t) data->value_length);
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
     data->value_length = extattr_get_file(data->filename, EXTATTR_NAMESPACE_USER,
                                           data->attribute, data->value, (size_t)data->value_length);
-    printf("async.c: %s : data->value_length: %zd \n", __func__, data->value_length);
 #elif __APPLE__
     data->value_length = getxattr(data->filename, data->attribute, data->value, (size_t) data->value_length, 0, 0);
 #else
@@ -44,7 +42,7 @@ void xattr_get_execute(napi_env env, void* _data) {
 #endif
 
   if (data->value_length == -1) {
-    data->e = errno;
+    data->error = errno;
     return ;
   }
 }
@@ -57,7 +55,7 @@ void xattr_get_complete(napi_env env, napi_status status, void* _data) {
 
   if (data->value_length == -1) {
     napi_value error;
-    assert(create_xattr_error(env, data->e, &error) == napi_ok);
+    assert(create_xattr_error(env, data->error, &error) == napi_ok);
     assert(napi_reject_deferred(env, data->deferred, error) == napi_ok);
     return;
   }
@@ -104,7 +102,7 @@ typedef struct {
   char* filename;
   char* attribute;
   napi_deferred deferred;
-  int e;
+  int error;
   ssize_t value_length;
   char* value;
 } XattrSetData;
@@ -112,10 +110,9 @@ typedef struct {
 void xattr_set_execute(napi_env env, void* _data) {
     XattrSetData* data = _data;
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
     ssize_t res = extattr_set_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute,
                            data->value, (size_t)data->value_length);
-    printf("async.c: %s : res: %zd \n", __func__, res);
 #elif __APPLE__
     ssize_t res = setxattr(data->filename, data->attribute, data->value, data->value_length, 0, 0);
 #else
@@ -123,9 +120,9 @@ void xattr_set_execute(napi_env env, void* _data) {
 #endif
 
   if (res == -1) {
-    data->e = errno;
+    data->error = errno;
   } else {
-    data->e = 0;
+    data->error = 0;
   }
 }
 
@@ -135,9 +132,9 @@ void xattr_set_complete(napi_env env, napi_status status, void* _data) {
   free(data->filename);
   free(data->attribute);
 
-  if (data->e != 0) {
+  if (data->error != 0) {
     napi_value error;
-    assert(create_xattr_error(env, data->e, &error) == napi_ok);
+    assert(create_xattr_error(env, data->error, &error) == napi_ok);
     assert(napi_reject_deferred(env, data->deferred, error) == napi_ok);
     return;
   }
@@ -185,7 +182,7 @@ napi_value xattr_set(napi_env env, napi_callback_info info) {
 typedef struct {
   char* filename;
   napi_deferred deferred;
-  int e;
+  int error;
   ssize_t result_length;
   char* result;
 } XattrListData;
@@ -193,9 +190,9 @@ typedef struct {
 void xattr_list_execute(napi_env env, void* _data) {
   XattrListData* data = _data;
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
-    data->result_length = extattr_list_file(data->filename, EXTATTR_NAMESPACE_USER, data->result, (size_t)data->result_length);
-    printf("async.c: %s : data->value_length: %zd \n", __func__, data->result_length);
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    data->result_length = extattr_list_file(data->filename, EXTATTR_NAMESPACE_USER,
+                                            data->result, (size_t)data->result_length);
 #elif __APPLE__
     data->result_length = listxattr(data->filename, NULL, 0, 0);
 #else
@@ -203,15 +200,15 @@ void xattr_list_execute(napi_env env, void* _data) {
 #endif
 
   if (data->result_length == -1) {
-    data->e = errno;
+    data->error = errno;
     return ;
   }
 
   data->result = (char *) malloc((size_t) data->result_length);
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
-    data->result_length = extattr_list_file(data->filename, EXTATTR_NAMESPACE_USER, data->result, (size_t) data->result_length);
-    printf("async.c: %s : data->value_length: %zd \n", __func__, data->result_length);
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+    data->result_length = extattr_list_file(data->filename, EXTATTR_NAMESPACE_USER,
+                                            data->result, (size_t) data->result_length);
 #elif __APPLE__
     data->result_length = listxattr(data->filename, data->result, (size_t) data->result_length, 0);
 #else
@@ -219,7 +216,7 @@ void xattr_list_execute(napi_env env, void* _data) {
 #endif
 
   if (data->result_length == -1) {
-    data->e = errno;
+    data->error = errno;
     return ;
   }
 }
@@ -231,7 +228,7 @@ void xattr_list_complete(napi_env env, napi_status status, void* _data) {
 
   if (data->result_length == -1) {
     napi_value error;
-    assert(create_xattr_error(env, data->e, &error) == napi_ok);
+    assert(create_xattr_error(env, data->error, &error) == napi_ok);
     assert(napi_reject_deferred(env, data->deferred, error) == napi_ok);
     return;
   }
@@ -274,15 +271,14 @@ typedef struct {
   char* filename;
   char* attribute;
   napi_deferred deferred;
-  int e;
+  int error;
 } XattrRemoveData;
 
 void xattr_remove_execute(napi_env env, void* _data) {
   XattrRemoveData* data = _data;
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__)
     int res = extattr_delete_file(data->filename, EXTATTR_NAMESPACE_USER, data->attribute);
-    printf("async.c: %s : data->attribute: %s \n", __func__, data->attribute);
 #elif __APPLE__
     int res = removexattr(data->filename, data->attribute, 0);
 #else
@@ -290,9 +286,9 @@ void xattr_remove_execute(napi_env env, void* _data) {
 #endif
 
   if (res == -1) {
-    data->e = errno;
+    data->error = errno;
   } else {
-    data->e = 0;
+    data->error = 0;
   }
 }
 
@@ -302,9 +298,9 @@ void xattr_remove_complete(napi_env env, napi_status status, void* _data) {
   free(data->filename);
   free(data->attribute);
 
-  if (data->e != 0) {
+  if (data->error != 0) {
     napi_value error;
-    assert(create_xattr_error(env, data->e, &error) == napi_ok);
+    assert(create_xattr_error(env, data->error, &error) == napi_ok);
     assert(napi_reject_deferred(env, data->deferred, error) == napi_ok);
     return;
   }
