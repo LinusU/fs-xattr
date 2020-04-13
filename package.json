@@ -10,13 +10,14 @@
     "src/"
   ],
   "scripts": {
-    "test": "standard && mocha",
+    "test": "standard && mocha && ts-readme-generator --check",
     "lint": "standard"
   },
   "devDependencies": {
     "fs-temp": "^1.1.2",
     "mocha": "^6.2.2",
-    "standard": "^14.3.1"
+    "standard": "^14.3.1",
+    "ts-readme-generator": "^0.4.3"
   },
   "engines": {
     "node": ">=8.6.0"

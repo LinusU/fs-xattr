@@ -28,44 +28,64 @@ console.log(await xattr.get('index.js', 'com.linusu.test'))
 
 ## API
 
-### xattr.get(path, attr)
+### `get(path, attr)`
+
+- `path` (`string`, required)
+- `attr` (`string`, required)
+- returns `Promise<Buffer>` - a `Promise` that will resolve with the value of the attribute.
 
 Get extended attribute `attr` from file at `path`.
 
-Returns a `Promise` that will resolve with the value of the attribute.
+### `getSync(path, attr)`
 
-### xattr.getSync(path, attr)
+- `path` (`string`, required)
+- `attr` (`string`, required)
+- returns `Buffer`
 
-Synchronous version of `xattr.get`
+Synchronous version of `get`.
 
-### xattr.set(path, attr, value)
+### `set(path, attr, value)`
+
+- `path` (`string`, required)
+- `attr` (`string`, required)
+- `value` (`Buffer` or `string`, required)
+- returns `Promise<void>` - a `Promise` that will resolve when the value has been set.
 
 Set extended attribute `attr` to `value` on file at `path`.
 
-`value` can be either a string or a `Buffer`.
+### `setSync(path, attr, value)`
 
-Returns a `Promise` that will resolve when the value has been set.
+- `path` (`string`, required)
+- `attr` (`string`, required)
+- `value` (`Buffer` or `string`, required)
 
-### xattr.setSync(path, attr, value)
+Synchronous version of `set`.
 
-Synchronous version of `xattr.set`
+### `remove(path, attr)`
 
-### xattr.remove(path, attr)
+- `path` (`string`, required)
+- `attr` (`string`, required)
+- returns `Promise<void>` - a `Promise` that will resolve when the value has been removed.
 
 Remove extended attribute `attr` on file at `path`.
 
-Returns a `Promise` that will resolve when the value has been removed.
+### `removeSync(path, attr)`
 
-### xattr.removeSync(path, attr)
+- `path` (`string`, required)
+- `attr` (`string`, required)
 
-Synchronous version of `xattr.remove`
+Synchronous version of `remove`.
 
-### xattr.list(path)
+### `list(path)`
+
+- `path` (`string`, required)
+- returns `Promise<Array<string>>` - a `Promise` that will resolve with an array of strings, e.g. `['com.linusu.test', 'com.apple.FinderInfo']`.
 
 List all attributes on file at `path`.
 
-Returns a `Promise` that will resolve with an array of strings, e.g. `['com.linusu.test', 'com.apple.FinderInfo']`.
+### `listSync(path)`
 
-### xattr.listSync(path)
+- `path` (`string`, required)
+- returns `Array<string>`
 
-Synchronous version of `xattr.list`
+Synchronous version of `list`.
