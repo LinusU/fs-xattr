@@ -9,8 +9,8 @@ const temp = require('fs-temp')
 const assert = require('assert')
 const crypto = require('crypto')
 
-const attribute0 = 'com.linusu.test'
-const attribute1 = 'com.linusu.secondary'
+const attribute0 = 'user.linusu.test'
+const attribute1 = 'user.linusu.secondary'
 const payload0 = crypto.randomBytes(24).toString('hex')
 const payload1 = crypto.randomBytes(24).toString('hex')
 

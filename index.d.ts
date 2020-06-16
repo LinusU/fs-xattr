@@ -37,7 +37,7 @@ export function removeSync (path: string, attr: string): void
 /**
  * List all attributes on file at `path`.
  *
- * @returns a `Promise` that will resolve with an array of strings, e.g. `['com.linusu.test', 'com.apple.FinderInfo']`.
+ * @returns a `Promise` that will resolve with an array of strings, e.g. `['user.linusu.test', 'com.apple.FinderInfo']`.
  */
 export function list (path: string): Promise<string[]>
 
