@@ -5,6 +5,7 @@
 const xattr = require('../')
 
 const fs = require('fs')
+const os = require('os')
 const temp = require('fs-temp')
 const assert = require('assert')
 const crypto = require('crypto')
@@ -47,8 +48,8 @@ describe('xattr#sync', function () {
     assert.throws(function () {
       xattr.getSync(path, attribute0)
     }, function (err) {
-      assert.strictEqual(err.errno, 93)
-      assert.strictEqual(err.code, 'ENOATTR')
+      assert.strictEqual(err.errno, os.platform() === 'darwin' ? 93 : 61)
+      assert.strictEqual(err.code, os.platform() === 'darwin' ? 'ENOATTR' : 'ENODATA')
       return true
     })
   })
@@ -98,8 +99,8 @@ describe('xattr#async', function () {
     }
 
     assert(err)
-    assert.strictEqual(err.errno, 93)
-    assert.strictEqual(err.code, 'ENOATTR')
+    assert.strictEqual(err.errno, os.platform() === 'darwin' ? 93 : 61)
+    assert.strictEqual(err.code, os.platform() === 'darwin' ? 'ENOATTR' : 'ENODATA')
   })
 
   after(function (done) {
@@ -144,8 +145,8 @@ describe('xattr#utf8', function () {
     }
 
     assert(err)
-    assert.strictEqual(err.errno, 93)
-    assert.strictEqual(err.code, 'ENOATTR')
+    assert.strictEqual(err.errno, os.platform() === 'darwin' ? 93 : 61)
+    assert.strictEqual(err.code, os.platform() === 'darwin' ? 'ENOATTR' : 'ENODATA')
   })
 
   after(function (done) {
