@@ -20,9 +20,9 @@ npm install --save fs-xattr
 ```javascript
 const xattr = require('fs-xattr')
 
-await xattr.set('index.js', 'com.linusu.test', 'Hello, World!')
+await xattr.set('index.js', 'user.linusu.test', 'Hello, World!')
 
-console.log(await xattr.get('index.js', 'com.linusu.test'))
+console.log(await xattr.get('index.js', 'user.linusu.test'))
 //=> Hello, World!
 ```
 
@@ -79,7 +79,7 @@ Synchronous version of `remove`.
 ### `list(path)`
 
 - `path` (`string`, required)
-- returns `Promise<Array<string>>` - a `Promise` that will resolve with an array of strings, e.g. `['com.linusu.test', 'com.apple.FinderInfo']`.
+- returns `Promise<Array<string>>` - a `Promise` that will resolve with an array of strings, e.g. `['user.linusu.test', 'com.apple.FinderInfo']`.
 
 List all attributes on file at `path`.
 
@@ -89,3 +89,13 @@ List all attributes on file at `path`.
 - returns `Array<string>`
 
 Synchronous version of `list`.
+
+## Namespaces
+
+For the large majority of Linux filesystem there are currently 4 supported namespaces (`user`, `trusted`, `security`, and `system`) you can use. Some other systems, like FreeBSD have only 2 (`user` and `system`).
+
+Be sure to use a namespace that is appropriate for your supported platforms. You can read more about this in [the "Extended File Attributes" Wikipedia article](https://en.wikipedia.org/wiki/Extended_file_attributes#Implementations).
+
+Using a namespace like `com.linusu.test` would work on macOS, but would give you the following error on Debian Linux:
+
+> Error \[ENOTSUP]: The file system does not support extended attributes or has the feature disabled.
