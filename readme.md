@@ -18,17 +18,17 @@ npm install --save fs-xattr
 ## Usage
 
 ```javascript
-const xattr = require('fs-xattr')
+import { getAttribute, setAttribute } from 'fs-xattr'
 
-await xattr.set('index.js', 'user.linusu.test', 'Hello, World!')
+await setAttribute('index.js', 'user.linusu.test', 'Hello, World!')
 
-console.log(await xattr.get('index.js', 'user.linusu.test'))
+console.log(await getAttribute('index.js', 'user.linusu.test'))
 //=> Hello, World!
 ```
 
 ## API
 
-### `get(path, attr)`
+### `getAttribute(path, attr)`
 
 - `path` (`string`, required)
 - `attr` (`string`, required)
@@ -36,15 +36,15 @@ console.log(await xattr.get('index.js', 'user.linusu.test'))
 
 Get extended attribute `attr` from file at `path`.
 
-### `getSync(path, attr)`
+### `getAttributeSync(path, attr)`
 
 - `path` (`string`, required)
 - `attr` (`string`, required)
 - returns `Buffer`
 
-Synchronous version of `get`.
+Synchronous version of `getAttribute`.
 
-### `set(path, attr, value)`
+### `setAttribute(path, attr, value)`
 
 - `path` (`string`, required)
 - `attr` (`string`, required)
@@ -53,15 +53,15 @@ Synchronous version of `get`.
 
 Set extended attribute `attr` to `value` on file at `path`.
 
-### `setSync(path, attr, value)`
+### `setAttributeSync(path, attr, value)`
 
 - `path` (`string`, required)
 - `attr` (`string`, required)
 - `value` (`Buffer` or `string`, required)
 
-Synchronous version of `set`.
+Synchronous version of `setAttribute`.
 
-### `remove(path, attr)`
+### `removeAttribute(path, attr)`
 
 - `path` (`string`, required)
 - `attr` (`string`, required)
@@ -69,26 +69,26 @@ Synchronous version of `set`.
 
 Remove extended attribute `attr` on file at `path`.
 
-### `removeSync(path, attr)`
+### `removeAttributeSync(path, attr)`
 
 - `path` (`string`, required)
 - `attr` (`string`, required)
 
-Synchronous version of `remove`.
+Synchronous version of `removeAttribute`.
 
-### `list(path)`
+### `listAttributes(path)`
 
 - `path` (`string`, required)
 - returns `Promise<Array<string>>` - a `Promise` that will resolve with an array of strings, e.g. `['user.linusu.test', 'com.apple.FinderInfo']`.
 
 List all attributes on file at `path`.
 
-### `listSync(path)`
+### `listAttributesSync(path)`
 
 - `path` (`string`, required)
 - returns `Array<string>`
 
-Synchronous version of `list`.
+Synchronous version of `listAttributes`.
 
 ## Namespaces
 

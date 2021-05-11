@@ -1,13 +1,13 @@
 /* eslint-env mocha */
 
-'use strict'
+import * as xattr from '../index.js'
 
-const xattr = require('../')
+import assert from 'node:assert'
+import crypto from 'node:crypto'
+import fs from 'node:fs'
+import os from 'node:os'
 
-const fs = require('fs')
-const temp = require('fs-temp')
-const assert = require('assert')
-const crypto = require('crypto')
+import temp from 'fs-temp'
 
 const attribute0 = 'user.linusu.test'
 const attribute1 = 'user.linusu.secondary'
@@ -22,33 +22,33 @@ describe('xattr#sync', function () {
   })
 
   it('should set an attribute', function () {
-    xattr.setSync(path, attribute0, payload0)
-    xattr.setSync(path, attribute1, payload1)
+    xattr.setAttributeSync(path, attribute0, payload0)
+    xattr.setAttributeSync(path, attribute1, payload1)
   })
 
   it('should get an attribute', function () {
-    const val = xattr.getSync(path, attribute0)
+    const val = xattr.getAttributeSync(path, attribute0)
     assert(Buffer.isBuffer(val))
     assert.strictEqual(val.toString(), payload0)
   })
 
   it('should list the attributes', function () {
-    const val = xattr.listSync(path)
+    const val = xattr.listAttributesSync(path)
     assert.ok(val.includes(attribute0))
     assert.ok(val.includes(attribute1))
   })
 
   it('should remove the attribute', function () {
-    xattr.removeSync(path, attribute0)
-    xattr.removeSync(path, attribute1)
+    xattr.removeAttributeSync(path, attribute0)
+    xattr.removeAttributeSync(path, attribute1)
   })
 
   it('should give useful errors', function () {
     assert.throws(function () {
-      xattr.getSync(path, attribute0)
+      xattr.getAttributeSync(path, attribute0)
     }, function (err) {
-      assert.strictEqual(err.errno, 93)
-      assert.strictEqual(err.code, 'ENOATTR')
+      assert.strictEqual(err.errno, os.platform() === 'darwin' ? 93 : 61)
+      assert.strictEqual(err.code, os.platform() === 'darwin' ? 'ENOATTR' : 'ENODATA')
       return true
     })
   })
@@ -66,40 +66,40 @@ describe('xattr#async', function () {
   })
 
   it('should set an attribute', async function () {
-    await xattr.set(path, attribute0, payload0)
-    await xattr.set(path, attribute1, payload1)
+    await xattr.setAttribute(path, attribute0, payload0)
+    await xattr.setAttribute(path, attribute1, payload1)
   })
 
   it('should get an attribute', async function () {
-    const val = await xattr.get(path, attribute0)
+    const val = await xattr.getAttribute(path, attribute0)
 
     assert(Buffer.isBuffer(val))
     assert.strictEqual(val.toString(), payload0)
   })
 
   it('should list the attributes', async function () {
-    const list = await xattr.list(path)
+    const list = await xattr.listAttributes(path)
 
     assert.ok(list.includes(attribute0))
     assert.ok(list.includes(attribute1))
   })
 
   it('should remove the attribute', async function () {
-    await xattr.remove(path, attribute0)
-    await xattr.remove(path, attribute1)
+    await xattr.removeAttribute(path, attribute0)
+    await xattr.removeAttribute(path, attribute1)
   })
 
   it('should give useful errors', async function () {
     let err
     try {
-      await xattr.get(path, attribute0)
+      await xattr.getAttribute(path, attribute0)
     } catch (_err) {
       err = _err
     }
 
     assert(err)
-    assert.strictEqual(err.errno, 93)
-    assert.strictEqual(err.code, 'ENOATTR')
+    assert.strictEqual(err.errno, os.platform() === 'darwin' ? 93 : 61)
+    assert.strictEqual(err.code, os.platform() === 'darwin' ? 'ENOATTR' : 'ENODATA')
   })
 
   after(function (done) {
@@ -115,37 +115,37 @@ describe('xattr#utf8', function () {
   })
 
   it('should set an attribute', async function () {
-    await xattr.set(path, attribute0, payload0)
+    await xattr.setAttribute(path, attribute0, payload0)
   })
 
   it('should get an attribute', async function () {
-    const val = await xattr.get(path, attribute0)
+    const val = await xattr.getAttribute(path, attribute0)
 
     assert(Buffer.isBuffer(val))
     assert.strictEqual(val.toString(), payload0)
   })
 
   it('should list the attributes', async function () {
-    const list = await xattr.list(path)
+    const list = await xattr.listAttributes(path)
 
     assert.ok(list.includes(attribute0))
   })
 
   it('should remove the attribute', async function () {
-    await xattr.remove(path, attribute0)
+    await xattr.removeAttribute(path, attribute0)
   })
 
   it('should give useful errors', async function () {
     let err
     try {
-      await xattr.get(path, attribute0)
+      await xattr.getAttribute(path, attribute0)
     } catch (_err) {
       err = _err
     }
 
     assert(err)
-    assert.strictEqual(err.errno, 93)
-    assert.strictEqual(err.code, 'ENOATTR')
+    assert.strictEqual(err.errno, os.platform() === 'darwin' ? 93 : 61)
+    assert.strictEqual(err.code, os.platform() === 'darwin' ? 'ENOATTR' : 'ENODATA')
   })
 
   after(function (done) {

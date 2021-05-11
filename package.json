@@ -3,6 +3,8 @@
   "version": "0.3.1",
   "license": "MIT",
   "repository": "LinusU/fs-xattr",
+  "type": "module",
+  "exports": "./index.js",
   "files": [
     "binding.gyp",
     "index.d.ts",
@@ -15,12 +17,12 @@
   },
   "devDependencies": {
     "fs-temp": "^1.1.2",
-    "mocha": "^6.2.2",
-    "standard": "^14.3.1",
+    "mocha": "^8.4.0",
+    "standard": "^16.0.3",
     "ts-readme-generator": "^0.4.3"
   },
   "engines": {
-    "node": ">=8.6.0"
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "os": [
     "!win32"
