@@ -1,6 +1,5 @@
-import { createRequire } from 'node:module'
-
-const addon = createRequire(import.meta.url)('./build/Release/xattr')
+const path = require('path')
+const addon = require(path.join(__dirname, './build/Release/xattr.node'))
 
 function validateArgument (key, val) {
   switch (key) {
@@ -21,14 +20,14 @@ function validateArgument (key, val) {
 
 /* Async methods */
 
-export function getAttribute (path, attr) {
+function getAttribute (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
   return addon.get(path, attr)
 }
 
-export function setAttribute (path, attr, value) {
+function setAttribute (path, attr, value) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
   value = validateArgument('value', value)
@@ -36,13 +35,13 @@ export function setAttribute (path, attr, value) {
   return addon.set(path, attr, value)
 }
 
-export function listAttributes (path) {
+function listAttributes (path) {
   path = validateArgument('path', path)
 
   return addon.list(path)
 }
 
-export function removeAttribute (path, attr) {
+function removeAttribute (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
@@ -51,14 +50,14 @@ export function removeAttribute (path, attr) {
 
 /* Sync methods */
 
-export function getAttributeSync (path, attr) {
+function getAttributeSync (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
   return addon.getSync(path, attr)
 }
 
-export function setAttributeSync (path, attr, value) {
+function setAttributeSync (path, attr, value) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
   value = validateArgument('value', value)
@@ -66,15 +65,26 @@ export function setAttributeSync (path, attr, value) {
   return addon.setSync(path, attr, value)
 }
 
-export function listAttributesSync (path) {
+function listAttributesSync (path) {
   path = validateArgument('path', path)
 
   return addon.listSync(path)
 }
 
-export function removeAttributeSync (path, attr) {
+function removeAttributeSync (path, attr) {
   path = validateArgument('path', path)
   attr = validateArgument('attr', attr)
 
   return addon.removeSync(path, attr)
+}
+
+module.exports = {
+  getAttribute,
+  getAttributeSync,
+  setAttribute,
+  setAttributeSync,
+  listAttributes,
+  listAttributesSync,
+  removeAttribute,
+  removeAttributeSync
 }
