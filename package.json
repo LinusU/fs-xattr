@@ -13,11 +13,13 @@
   ],
   "scripts": {
     "test": "standard && mocha && ts-readme-generator --check",
-    "lint": "standard"
+    "lint": "standard",
+    "build": "npx node-gyp build"
   },
   "devDependencies": {
     "fs-temp": "^1.1.2",
     "mocha": "^8.4.0",
+    "node-gyp": "^8.2.0",
     "standard": "^16.0.3",
     "ts-readme-generator": "^0.4.3"
   },
